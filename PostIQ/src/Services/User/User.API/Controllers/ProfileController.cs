@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using User.Application.Queries;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,9 +19,11 @@ namespace User.API.Controllers
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(long id)
         {
-            return "value";
+            GetUIserByIdQuery query = new GetUIserByIdQuery (id);
+            var result = await Mediator.Send(query);
+            return Ok(result);
         }
 
         // POST api/<ProfileController>

@@ -15,7 +15,7 @@ namespace User.Application.Handllers
         private readonly IRepositoryAsync<Users> _userAsync = _uow.GetRepositoryAsync<Users>();
         public async Task<SingleResponse<UserResponse>> Handle(GetUIserByIdQuery request, CancellationToken cancellationToken)
         {
-            var response = new SingleResponse<UserResponse>(null);
+            SingleResponse<UserResponse> response = new(null);
             var result = await _userAsync.SingleOrDefaultAsync(x => x.UserId == request.UserId && x.IsActive == true, null,
                                                                 i => i.Include(x => x.UserDetail));
             response.Data = _mapper.Map<UserResponse>(result);
