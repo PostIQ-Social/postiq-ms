@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E9BDF28A-0447-4D8F-9022-18F826ECAE9C}"
 EndProject
@@ -32,6 +32,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Home.Infrastructure", "PostIQ\src\Services\Home\Home.Infrastructure\Home.Infrastructure.csproj", "{2F005B0B-5121-421B-95F2-047AB57EA6E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Home.API", "PostIQ\src\Services\Home\Home.API\Home.API.csproj", "{8B9B21A4-1EE5-4DDD-9B2A-B42C7AC97328}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{64C4C862-5898-4B77-8DBF-4D6A26D1F158}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "PostIQ\src\Database\Database\Database.sqlproj", "{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +79,12 @@ Global
 		{8B9B21A4-1EE5-4DDD-9B2A-B42C7AC97328}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9B21A4-1EE5-4DDD-9B2A-B42C7AC97328}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B9B21A4-1EE5-4DDD-9B2A-B42C7AC97328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,5 +103,10 @@ Global
 		{5DDB1F82-2085-4F41-B530-FBBABEEC5C28} = {DA63AAC1-42C3-4E7B-8CC7-550337703E84}
 		{2F005B0B-5121-421B-95F2-047AB57EA6E5} = {DA63AAC1-42C3-4E7B-8CC7-550337703E84}
 		{8B9B21A4-1EE5-4DDD-9B2A-B42C7AC97328} = {DA63AAC1-42C3-4E7B-8CC7-550337703E84}
+		{64C4C862-5898-4B77-8DBF-4D6A26D1F158} = {E9BDF28A-0447-4D8F-9022-18F826ECAE9C}
+		{59521B09-B5C8-483A-B9C0-9CB3E686E1DE} = {64C4C862-5898-4B77-8DBF-4D6A26D1F158}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1BC4215-B27C-4E03-B72B-D244E7067FF6}
 	EndGlobalSection
 EndGlobal
