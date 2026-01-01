@@ -17,8 +17,6 @@ namespace User.Infrastructure.Extensions
                 options.UseSqlServer(connectionString, o => o.UseCompatibilityLevel(120));
             }).AddUnitOfWork<UserDBContext>();
 
-            //services.AddAutoMapper(typeof(UserMapper));
-
             return services;
         }
     }
