@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [User].[UserDetails] (
-    [UserDetailId] BIGINT       NOT NULL,
+    [UserDetailId] BIGINT      IDENTITY (1, 1) NOT NULL,
     [UserId]       BIGINT       NOT NULL,
     [FirstName]    VARCHAR (50) NOT NULL,
     [MiddleName]   VARCHAR (50) NULL,

@@ -8,9 +8,9 @@ namespace User.Application.Mappers
     {
         public UserMapper()
         {
-            CreateMap<Users, UserResponse>()
-                .ForMember(dest => dest.FirstName, src => src.MapFrom(s => s.UserDetail.FirstName))
-                .ForMember(dest => dest.LastName, src => src.MapFrom(s => s.UserDetail.LastName));
+            CreateMap<Users, UserResponse>().ConstructUsing(src => new UserResponse(src.UserId, 
+                                                                        src.UserDetail.FirstName, 
+                                                                        src.UserDetail.LastName));
         }
 
     }
