@@ -10,7 +10,7 @@ using User.Core.Persistence;
 
 namespace User.Application.Handllers
 {
-    public class GetUserByIdHandller(UnitOfWork<UserDBContext> _uow, IMapper _mapper) : IRequestHandler<GetUIserByIdQuery, SingleResponse<UserResponse>>
+    public class GetUserByIdHandler(UnitOfWork<UserDBContext> _uow, IMapper _mapper) : IRequestHandler<GetUIserByIdQuery, SingleResponse<UserResponse>>
     {
         private readonly IRepositoryAsync<Users> _userAsync = _uow.GetRepositoryAsync<Users>();
         public async Task<SingleResponse<UserResponse>> Handle(GetUIserByIdQuery request, CancellationToken cancellationToken)
