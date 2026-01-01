@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PostIQ.Core.Database.Extension;
-using User.Application.Mappers;
 using User.Core.Persistence;
 
 namespace User.Infrastructure.Extensions
