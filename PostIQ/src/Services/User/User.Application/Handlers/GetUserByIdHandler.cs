@@ -8,7 +8,7 @@ using User.Application.Response;
 using User.Core.Entities;
 using User.Core.Persistence;
 
-namespace User.Application.Handllers
+namespace User.Application.Handlers
 {
     public class GetUserByIdHandler : IRequestHandler<GetUIserByIdQuery, SingleResponse<UserResponse>>
     {
