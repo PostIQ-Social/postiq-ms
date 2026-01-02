@@ -15,7 +15,7 @@ var services = builder.Services;
     services.AddDbContextExtension(configuration);
     services.AddServiceCollectionExtensions(configuration,
         typeof(User.Core.Entities.Users).Assembly,
-        typeof(User.Application.Handllers.GetUserByIdHandler).Assembly,
+        typeof(User.Application.Handlers.GetUserByIdHandler).Assembly,
         typeof(User.Infrastructure.Repositories.UserRepository).Assembly        
     );
 }
