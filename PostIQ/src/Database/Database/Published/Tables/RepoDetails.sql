@@ -4,7 +4,7 @@
     [Key]           VARCHAR (100) NULL,
     [Value]         NVARCHAR (MAX) NULL,
     [Ordered]       INT           NULL,
-    [IsActive]      VARCHAR (100) NOT NULL,
+    [IsActive]      BIT NOT NULL,
     [CreatedOn]     DATETIME      NOT NULL,
     [CreatedBy]     BIGINT        NOT NULL,
     [UpdatedOn]     DATETIME      NULL,

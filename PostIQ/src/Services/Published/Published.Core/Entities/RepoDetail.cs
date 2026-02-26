@@ -21,9 +21,7 @@ public partial class RepoDetail
 
     public int? Ordered { get; set; }
 
-    [StringLength(100)]
-    [Unicode(false)]
-    public string IsActive { get; set; } = null!;
+    public bool IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime CreatedOn { get; set; }

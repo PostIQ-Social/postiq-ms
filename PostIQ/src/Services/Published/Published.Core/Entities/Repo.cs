@@ -22,12 +22,9 @@ public partial class Repo
     [Unicode(false)]
     public string RepoUrl { get; set; } = null!;
 
-    [Unicode(false)]
     public int Status { get; set; }
 
-    [StringLength(100)]
-    [Unicode(false)]
-    public string IsActive { get; set; } = null!;
+    public bool IsActive { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime PostedOn { get; set; }

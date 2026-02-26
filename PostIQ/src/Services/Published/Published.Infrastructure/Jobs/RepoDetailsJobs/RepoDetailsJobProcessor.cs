@@ -86,7 +86,7 @@ namespace Published.Infrastructure.Jobs.RepoDetailsJobs
                     Key = key,
                     Value = value,
                     Ordered = order++,
-                    IsActive = "true",
+                    IsActive = true,
                     CreatedOn = DateTime.UtcNow,
                     CreatedBy = repo.CreatedBy
                 };

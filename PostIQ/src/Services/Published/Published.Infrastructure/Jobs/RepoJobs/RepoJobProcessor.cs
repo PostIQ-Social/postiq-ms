@@ -81,7 +81,7 @@ namespace Published.Infrastructure.Jobs.RepoJobs
                     Source = job.Source,
                     RepoUrl = repoInfo.Url,
                     Status = Convert.ToInt16(StatusEnum.Pending),
-                    IsActive = Boolean.TrueString,
+                    IsActive = true,
                     PostedOn = repoInfo.PublishedDate ?? DateTime.UtcNow,
                     CreatedOn = DateTime.UtcNow,
                     CreatedBy = job.CreatedBy,
