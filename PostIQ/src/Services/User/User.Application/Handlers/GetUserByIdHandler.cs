@@ -21,6 +21,8 @@ namespace User.Application.Handlers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+#nullable disable
+
         public async Task<SingleResponse<UserResponse>> Handle(GetUIserByIdQuery request, CancellationToken cancellationToken)
         {
             var response = new SingleResponse<UserResponse>(null);
@@ -29,8 +31,21 @@ namespace User.Application.Handlers
                 null,
                 i => i.Include(x => x.UserDetail));
 
-            response.Data = _mapper.Map<UserResponse>(result);
+            if (result == null)
+            {
+                response.Data = null;
+                return response;
+            }
+
+            // Construct safely from possibly-null UserDetail
+            response.Data = new UserResponse(
+                result.UserId,
+                result.UserDetail?.FirstName ?? string.Empty,
+                result.UserDetail?.LastName ?? string.Empty);
+
             return response;
         }
+
+#nullable restore
     }
 }
