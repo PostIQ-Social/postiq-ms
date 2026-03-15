@@ -40,7 +40,7 @@ namespace Home.Infrastructure.Jobs.PostSyncJob
 
             // Prefer LastId from the incoming item (first batch), otherwise fallback to job value
             var lastId = item.LastId > 0 ? item.LastId : job.Data?.LastId ?? 0L;
-            int batchSize = item.BatchSize > 0 ? (int)Math.Min(item.BatchSize, int.MaxValue) : 10000;
+            int batchSize = item.BatchSize;
 
             await ProcessBatchAsync(mediator, mapper, item, lastId, batchSize, executionStartedAt, cancellationToken);
 
