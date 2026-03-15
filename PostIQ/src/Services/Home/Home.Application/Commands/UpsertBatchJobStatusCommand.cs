@@ -10,6 +10,8 @@ namespace Home.Application.Commands
     {
         public long StatusId { get; set; }
 
+        public Guid BatchId {  get; set; }
+
         public int BatchSize { get; set; }
 
         public long StartId { get; set; }

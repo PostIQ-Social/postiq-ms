@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [Home].[BatchJobStatus](
 	[StatusId] [bigint] IDENTITY(1,1) NOT NULL,
+	[BatchId] UNIQUEIDENTIFIER NOT NULL,
 	[BatchSize] [int] NOT NULL,
 	[StartId] [bigint] NOT NULL,
 	[LastId] [bigint] NOT NULL,

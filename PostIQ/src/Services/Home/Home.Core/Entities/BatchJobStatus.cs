@@ -12,6 +12,8 @@ public partial class BatchJobStatus
     [Key]
     public long StatusId { get; set; }
 
+    public Guid BatchId { get; set; }
+
     public int BatchSize { get; set; }
 
     public long StartId { get; set; }

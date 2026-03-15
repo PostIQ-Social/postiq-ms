@@ -7,14 +7,14 @@ using PostIQ.Core.BackgroundProcess.Services;
 
 namespace Home.Infrastructure.Jobs.PostSyncJob
 {
-    public class PostSyncJobHostedService : BaseBackgroundJobHostedService<LastBatchJobResponse>
+    public class PostSyncJobHostedService : BaseBackgroundJobHostedService<BatchPostResponse>
     {
         public new const string JobName = "PostSyncJob";
         public PostSyncJobHostedService(
             IOptions<BackgroundJobsConfiguration> configuration, 
             ILogger<PostSyncJobHostedService> logger, 
-            IJobItemsProducer<LastBatchJobResponse> producer, 
-            IJobItemProcessor<LastBatchJobResponse> processor, 
+            IJobItemsProducer<BatchPostResponse> producer, 
+            IJobItemProcessor<BatchPostResponse> processor, 
             IBackgroundJobRegistry registry) : 
             base(JobName, configuration, logger, producer, processor, registry)
         {
