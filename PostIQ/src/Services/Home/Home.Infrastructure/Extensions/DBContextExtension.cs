@@ -14,7 +14,8 @@ namespace Home.Infrastructure.Extensions
     public static class DbContextExtension
     {
         public static IServiceCollection AddDbContextExtension(this IServiceCollection services, IConfiguration configuration)
-        {       
+        {
+            // Add HttpClient services
             services.AddHttpClientService(configuration);
 
             services.AddBackgroundJob(configuration);
