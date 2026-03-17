@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using PostIQ.Core.HttpClientService.Configuration;
 using PostIQ.Core.HttpClientService.Models;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
@@ -48,6 +50,24 @@ namespace PostIQ.Core.HttpClientService.Services
                     // TryAddWithoutValidation because some headers (like User-Agent) require special handling.
                     client.DefaultRequestHeaders.TryAddWithoutValidation(h.Key, h.Value);
                 }
+
+                // If AutomaticDecompression is requested, add Accept-Encoding header so servers
+                // may send compressed content. NOTE: actual automatic decompression is performed
+                // by the HttpMessageHandler (HttpClientHandler.AutomaticDecompression). To get
+                // automatic decompression, configure the primary handler when registering the
+                // named client with IHttpClientFactory (recommended). Adding Accept-Encoding
+                // here is a safe fallback when handler is configured elsewhere.
+                if (opts.AutomaticDecompression)
+                {
+                    // Only add if not already present
+                    if (!client.DefaultRequestHeaders.AcceptEncoding.Any())
+                    {
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("br"));
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip"));
+                        client.DefaultRequestHeaders.AcceptEncoding.Add(new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate"));
+                    }
+                }
+
             }
 
             return client;
