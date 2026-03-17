@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using PostIQ.Core.Response;
 using Published.Application.Response;
 using System;
@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Published.Application.Queries
 {
-    public record GetBatchRepoDetailsQuery : IRequest<ListResponse<BatchRepoDetailsRes>>
+    public record GetBatchReposQuery : IRequest<ListResponse<BatchRepoRes>>
     {
         public long AfterId { get; init; }
         public int BatchSize { get; init; }

@@ -8,7 +8,7 @@ namespace Published.Application.Mappers
     {
         public RepoDetailsMapper()
         {
-            CreateMap<RepoDetail, BatchRepoDetailsRes>()
+            CreateMap<RepoDetail, BatchRepoRes>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.Job.UserId : 0L))
                 .ForMember(dest => dest.Source, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.Job.Source : null))
                 .ForMember(dest => dest.RepoUrl, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.RepoUrl : null))

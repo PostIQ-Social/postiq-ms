@@ -11,7 +11,7 @@ namespace Published.API.Controllers
         [HttpGet("Batch")]
         public async Task<IActionResult> Batch(int LastId, int BatchSize)
         {
-            var query = new GetBatchRepoDetailsQuery
+            var query = new GetBatchReposQuery
             {
                 AfterId = LastId,
                 BatchSize = BatchSize
