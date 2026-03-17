@@ -16,7 +16,8 @@ builder.Services.AddServiceCollectionExtensions(builder.Configuration,
     typeof(Published.Core.Entities.Job).Assembly,
     typeof(Published.Core.Entities.Repo).Assembly,
     typeof(Published.Infrastructure.Services.MediumService).Assembly,
-    typeof(PostIQ.Core.AI.LLM.GeminiLlmClient).Assembly
+    typeof(PostIQ.Core.AI.LLM.GeminiLlmClient).Assembly,
+    typeof(Published.Application.Models.JobModel).Assembly
 );
 
 var app = builder.Build();
