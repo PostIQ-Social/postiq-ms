@@ -1,0 +1,190 @@
+using AutoMapper;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using PostIQ.Core.Database;
+using PostIQ.Core.Response;
+using Published.Application.Queries;
+using Published.Application.Response;
+using Published.Application.Services;
+using Published.Core.Entities;
+using Published.Core.Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Published.Application.Handlers
+{
+    public class GetBatchReposHandler : IRequestHandler<GetBatchReposQuery, ListResponse<BatchRepoRes>>
+    {
+        private readonly IRepositoryAsync<RepoDetail> _repoDetails;
+        private readonly IMapper _mapper;
+        private readonly IPostGenerationService _postGenerationService;
+
+        public GetBatchReposHandler(
+            IUnitOfWork<PublishDbContext> uow,
+            IMapper mapper,
+            IPostGenerationService postGenerationService)
+        {
+            _repoDetails = uow.GetRepositoryAsync<RepoDetail>();
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _postGenerationService = postGenerationService ?? throw new ArgumentNullException(nameof(postGenerationService));
+        }
+        public async Task<ListResponse<BatchRepoRes>> Handle(GetBatchReposQuery request, CancellationToken cancellationToken)
+        {
+            var result = await _repoDetails.GetListAsync(
+                predicate: x => x.RepoDetailsId > request.AfterId,
+                orderBy: o => o.OrderBy(x => x.RepoDetailsId),
+                include: i => i.Include(r => r.Repo)
+                                .ThenInclude(j => j.Job),
+                index: -1, 
+                size: request.BatchSize,
+                enableTracking: false);
+
+            // Get all RepoIds from the result to fetch related RepoDetails
+            var repoIds = result.Data.Select(x => x.RepoId).Distinct().ToList();
+            
+            // Fetch all RepoDetails for these repos
+            var allRepoDetails = await _repoDetails.GetListAsync(
+                predicate: x => repoIds.Contains(x.RepoId),
+                include: i => i.Include(r => r.Repo),
+                index: 0, 
+                size: int.MaxValue,
+                enableTracking: false);
+
+            // Map the result and extract required fields - Group by Repo
+            var mappedItems = new List<BatchRepoRes>();
+            var processedRepos = new HashSet<long>();
+
+            foreach (var repoDetail in result.Data)
+            {
+                // Skip if we've already processed this repo
+                if (processedRepos.Contains(repoDetail.RepoId))
+                {
+                    continue;
+                }
+                processedRepos.Add(repoDetail.RepoId);
+
+                // Group all details for this repo by key
+                var repoDetailsByKey = allRepoDetails.Data
+                    .Where(rd => rd.RepoId == repoDetail.RepoId)
+                    .GroupBy(rd => rd.Key)
+                    .ToDictionary(g => g.Key?.ToLower(), g => g.FirstOrDefault()?.Value);
+
+                // Extract individual fields
+                var headline = GetValueFromDict(repoDetailsByKey, "headline");
+                var summary = GetValueFromDict(repoDetailsByKey, "summary");
+                var takeaways = GetValueFromDict(repoDetailsByKey, "takeaways");
+                var cta = GetValueFromDict(repoDetailsByKey, "cta");
+                var hashtags = GetValueFromDict(repoDetailsByKey, "hashtags");
+                var originalTitle = GetValueFromDict(repoDetailsByKey, "original_title");
+                var originalAuthor = GetValueFromDict(repoDetailsByKey, "original_author");
+                var originalBaseUrl = GetValueFromDict(repoDetailsByKey, "original_baseurl");
+
+                // Build the post content
+                var postContent = BuildPost(headline, originalTitle, originalAuthor, summary, takeaways, cta, hashtags, originalBaseUrl);
+
+                // Generate AI-powered catchy post
+                var aiGeneratedPost = await _postGenerationService.GenerateCatchyPostAsync(
+                    headline, originalTitle, summary, takeaways, hashtags, cta, originalBaseUrl, cancellationToken);
+
+                // Determine posted date
+                DateTime postedOn = repoDetail.Repo.PostedOn;
+                var postedOnDetail = repoDetailsByKey.ContainsKey("original_published_date") ? repoDetailsByKey["original_published_date"] : null;
+                
+                if (!string.IsNullOrEmpty(postedOnDetail) && DateTime.TryParse(postedOnDetail, out var parsedDate))
+                {
+                    postedOn = parsedDate;
+                }
+
+                mappedItems.Add(new BatchRepoRes
+                {
+                    UserId = repoDetail.Repo.Job.UserId,
+                    Source = repoDetail.Repo.Job.Source,
+                    RepoUrl = repoDetail.Repo.RepoUrl,
+                    PostedOn = postedOn,
+                    AutoGeneratedPost = postContent,
+                    AutoGeneratedPostByAI = aiGeneratedPost
+                });
+            }
+
+            var response = new ListResponse<BatchRepoRes>(mappedItems)
+            {
+                Size = result.Size,
+                Page = result.Index,
+                PerPage = result.Size,
+                Count = mappedItems.Count,
+                TotalPages = result.Pages,
+                HasPrevious = result.HasPrevious,
+                HasNext = result.HasNext
+            };
+
+            return response;
+        }
+
+        private string? GetValueFromDict(Dictionary<string?, string?> dict, string key)
+        {
+            return dict.TryGetValue(key.ToLower(), out var value) ? value : null;
+        }
+
+        private string BuildPost(string? headline, string? originalTitle, string? originalAuthor, string? summary, string? takeaways, string? cta, string? hashtags, string? originalBaseUrl)
+        {
+            var postBuilder = new StringBuilder();
+
+            // Add headline
+            if (!string.IsNullOrWhiteSpace(headline))
+            {
+                postBuilder.AppendLine(headline);
+                postBuilder.AppendLine();
+            }
+
+            // Add original title if different from headline
+            if (!string.IsNullOrWhiteSpace(originalTitle) && originalTitle != headline)
+            {
+                postBuilder.AppendLine($"?? {originalTitle}");
+                if (!string.IsNullOrWhiteSpace(originalAuthor))
+                {
+                    postBuilder.AppendLine($"By {originalAuthor}");
+                }
+                postBuilder.AppendLine();
+            }
+
+            // Add summary
+            if (!string.IsNullOrWhiteSpace(summary))
+            {
+                postBuilder.AppendLine(summary);
+                postBuilder.AppendLine();
+            }
+
+            // Add takeaways
+            if (!string.IsNullOrWhiteSpace(takeaways))
+            {
+                postBuilder.AppendLine("?? Key Takeaways:");
+                postBuilder.AppendLine(takeaways);
+                postBuilder.AppendLine();
+            }
+
+            // Add call to action
+            if (!string.IsNullOrWhiteSpace(cta))
+            {
+                postBuilder.AppendLine($"?? {cta}");
+                postBuilder.AppendLine();
+            }
+
+            // Add source URL
+            if (!string.IsNullOrWhiteSpace(originalBaseUrl))
+            {
+                postBuilder.AppendLine($"Read more: {originalBaseUrl}");
+                postBuilder.AppendLine();
+            }
+
+            // Add hashtags at the end
+            if (!string.IsNullOrWhiteSpace(hashtags))
+            {
+                postBuilder.AppendLine(hashtags);
+            }
+
+            return postBuilder.ToString().Trim();
+        }
+    }
+}
