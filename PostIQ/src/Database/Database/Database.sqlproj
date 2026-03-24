@@ -79,5 +79,6 @@
     <Build Include="Security\Home.sql" />
     <Build Include="Home\Tables\Posts.sql" />
     <Build Include="Home\Tables\BatchJobStatus.sql" />
+    <Build Include="ProcessedPosts.sql" />
   </ItemGroup>
 </Project>

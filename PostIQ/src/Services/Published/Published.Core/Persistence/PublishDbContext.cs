@@ -22,6 +22,8 @@ public partial class PublishDbContext : DbContext
 
     public virtual DbSet<RepoDetail> RepoDetails { get; set; }
 
+    public virtual DbSet<ProcessedPost> ProcessedPosts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Job>(entity =>
@@ -45,6 +47,15 @@ public partial class PublishDbContext : DbContext
             entity.HasOne(d => d.Repo).WithMany(p => p.RepoDetails)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RepoDetails_Repos");
+        });
+
+        modelBuilder.Entity<ProcessedPost>(entity =>
+        {
+            entity.HasKey(e => e.ProcessedPostId).HasName("PK_Published.ProcessedPost");
+
+            entity.HasOne(d => d.Repo).WithMany(p => p.ProcessedPosts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProcessedPosts_Repos");
         });
 
         OnModelCreatingPartial(modelBuilder);
