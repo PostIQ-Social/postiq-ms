@@ -21,5 +21,6 @@ namespace PostIQ.Core.Response
         public List<TModel> Data { get; set; }  //this was only get --  public List<TModel> Data { get; } 
         public bool HasPrevious { get; set; }
         public bool HasNext { get; set; }
+        public long? LastProcessedId { get; set; }
     }
 }

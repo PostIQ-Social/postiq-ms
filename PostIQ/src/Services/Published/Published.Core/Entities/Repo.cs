@@ -47,4 +47,7 @@ public partial class Repo
 
     [InverseProperty("Repo")]
     public virtual ICollection<RepoDetail> RepoDetails { get; set; } = new List<RepoDetail>();
+
+    [InverseProperty("Repo")]
+    public virtual ICollection<ProcessedPost> ProcessedPosts { get; set; } = new List<ProcessedPost>();
 }
