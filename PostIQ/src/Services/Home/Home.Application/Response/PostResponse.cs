@@ -1,15 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Published.Application.Response
+namespace Home.Application.Response
 {
-    public record BatchRepoRes
+    public record PostResponse
     {
-        public long ProcessedPostId { get; set; }
+        public long Id { get; set; }
 
         public long UserId { get; set; }
 
@@ -26,6 +23,5 @@ namespace Published.Application.Response
         public string? RepoUrl { get; set; }
 
         public DateTime PostedOn { get; set; }
-
     }
 }

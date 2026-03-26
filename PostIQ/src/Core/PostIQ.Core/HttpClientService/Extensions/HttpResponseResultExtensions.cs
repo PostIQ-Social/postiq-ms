@@ -15,6 +15,77 @@ namespace PostIQ.Core.HttpClientService.Extensions
             PropertyNameCaseInsensitive = true
         };
 
+
+        /// <summary>
+        /// Convert HttpResponseResult content to a typed object
+        /// </summary>
+        public static T? ToObject<T>(
+            this Models.HttpResponseResult response,
+            JsonSerializerOptions? options = null)
+        {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            if (response.Content == null || response.Content.Length == 0)
+                return default;
+
+            try
+            {
+                var json = Encoding.UTF8.GetString(response.Content);
+                return JsonSerializer.Deserialize<T>(json, options ?? DefaultJsonOptions);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to deserialize response to {typeof(T).Name}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Async version (supports stream)
+        /// </summary>
+        public static async Task<T?> ToObjectAsync<T>(
+            this Models.HttpResponseResult response,
+            JsonSerializerOptions? options = null)
+        {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
+            try
+            {
+                if (response.ResponseStream != null)
+                {
+                    return await JsonSerializer.DeserializeAsync<T>(
+                        response.ResponseStream,
+                        options ?? DefaultJsonOptions);
+                }
+
+                if (response.Content != null && response.Content.Length > 0)
+                {
+                    var json = Encoding.UTF8.GetString(response.Content);
+                    return JsonSerializer.Deserialize<T>(json, options ?? DefaultJsonOptions);
+                }
+
+                return default;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to deserialize response to {typeof(T).Name}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Get raw string content
+        /// </summary>
+        public static string? ToRawString(this Models.HttpResponseResult response)
+        {
+            if (response?.Content == null)
+                return null;
+
+            return Encoding.UTF8.GetString(response.Content);
+        }
+
         /// <summary>
         /// Converts the response to <see cref="HttpResponse{T}"/> by deserializing the body as JSON to <typeparamref name="T"/>.
         /// Uses <see cref="HttpResponseResult.Content"/> when present; otherwise reads from <see cref="HttpResponseResult.ResponseStream"/>.
@@ -38,7 +109,7 @@ namespace PostIQ.Core.HttpClientService.Extensions
             if (result.Content != null && result.Content.Length > 0)
             {
                 rawBody = Encoding.UTF8.GetString(result.Content);
-                value = JsonSerializer.Deserialize<T>(result.Content, opts);
+                value = JsonSerializer.Deserialize<T>(rawBody, opts);
             }
             else if (result.ResponseStream != null)
             {

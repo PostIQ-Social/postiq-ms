@@ -1,4 +1,5 @@
-CREATE TABLE [Published].[ProcessedPosts] (
+
+    CREATE TABLE [Published].[ProcessedPosts] (
     [ProcessedPostId]      BIGINT         IDENTITY (1, 1) NOT NULL,
     [RepoId]               BIGINT         NOT NULL,
     [Headline]             NVARCHAR (500) NULL,
@@ -19,7 +20,10 @@ CREATE TABLE [Published].[ProcessedPosts] (
     CONSTRAINT [PK_Published.ProcessedPosts] PRIMARY KEY CLUSTERED ([ProcessedPostId] ASC),
     CONSTRAINT [FK_ProcessedPosts_Repos] FOREIGN KEY ([RepoId]) REFERENCES [Published].[Repos] ([RepoId])
 );
+GO
 
 -- Create indexes for performance optimization
 CREATE INDEX [IX_ProcessedPosts_RepoId] ON [Published].[ProcessedPosts] ([RepoId]);
+GO
 CREATE INDEX [IX_ProcessedPosts_Id_Active] ON [Published].[ProcessedPosts] ([ProcessedPostId], [IsActive]);
+GO

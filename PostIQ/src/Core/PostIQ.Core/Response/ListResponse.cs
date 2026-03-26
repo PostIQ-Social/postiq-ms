@@ -8,6 +8,8 @@ namespace PostIQ.Core.Response
 {
     public class ListResponse<TModel> : BaseResponse //, IListResponse<TModel> where TModel : class
     {
+        public ListResponse() : base() { }
+
         public ListResponse(List<TModel> model, List<KeyValuePair<string, string[]>> validationErrors = null) : base(validationErrors)
         {
             Data = model;
@@ -21,6 +23,5 @@ namespace PostIQ.Core.Response
         public List<TModel> Data { get; set; }  //this was only get --  public List<TModel> Data { get; } 
         public bool HasPrevious { get; set; }
         public bool HasNext { get; set; }
-        public long? LastProcessedId { get; set; }
     }
 }

@@ -8,8 +8,10 @@ namespace Home.Application.Response
     {
         public long StatusId { get; set; }
         public long LastId { get; set; }
+        public long StartId { get; set; }
 
         public int BatchSize { get; set; }
         public Guid BatchId { get; set; }
+        public string? Status { get; set; }
     }
 }

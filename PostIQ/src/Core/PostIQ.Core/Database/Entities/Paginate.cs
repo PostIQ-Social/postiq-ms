@@ -12,7 +12,7 @@ namespace PostIQ.Core.Database.Entities
         {
             var enumerable = source as T[] ?? source.ToArray();
 
-            if (from > index)
+            if (index != -1 && from > index)
                 throw new ArgumentException($"indexFrom: {from} > pageIndex: {index}, must indexFrom <= pageIndex");
             Size = size;
             Index = index;

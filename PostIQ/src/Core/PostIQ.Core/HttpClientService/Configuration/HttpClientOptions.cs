@@ -37,7 +37,7 @@ namespace PostIQ.Core.HttpClientService.Configuration
         /// <summary>
         /// Use HTTP/2 if available.
         /// </summary>
-        public bool UseHttp2 { get; set; } = true;
+        public bool UseHttp2 { get; set; } = false;
 
         /// <summary>
         /// Automatic decompression (GZip, Deflate, Brotli).

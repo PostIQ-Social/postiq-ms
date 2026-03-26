@@ -15,6 +15,8 @@ namespace PostIQ.Core.Response
 
         public bool IsValid => !Errors.Any();
 
-        public List<KeyValuePair<string, string[]>> Errors { get; }
+        public List<KeyValuePair<string, string[]>> Errors { get; set; }
+
+
     }
 }

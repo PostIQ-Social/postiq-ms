@@ -1,5 +1,6 @@
 ﻿using Home.Application.Response;
 using Home.Core.Entities;
+using Home.Core.Persistence;
 using Home.Infrastructure.Jobs.PostSyncJob;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,7 @@ namespace Home.Infrastructure.Extensions
             services.AddBackgroundJob(configuration);
             services.AddSingleton<IJobItemProcessor<LastBatchJobResponse>, PostSyncJobProcessor>();
             services.AddSingleton<IJobItemsProducer<LastBatchJobResponse>, PostSyncJobProducer>();
+ 
 
             var connectionString = configuration["DefaultConnection"];
             services.AddDbContext<HomeDbContext>(options =>

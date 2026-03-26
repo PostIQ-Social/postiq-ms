@@ -36,10 +36,9 @@ namespace Home.Infrastructure.Jobs.PostSyncJob
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
             var executionStartedAt = DateTime.UtcNow;
-            var job = await mediator.Send(new GetLastJobQuery(), cancellationToken);
 
             // Prefer LastId from the incoming item (first batch), otherwise fallback to job value
-            var lastId = item.LastId > 0 ? item.LastId : job.Data?.LastId ?? 0L;
+            var lastId = item.LastId;
             int batchSize = item.BatchSize;
 
             await ProcessBatchAsync(mediator, mapper, item, lastId, batchSize, executionStartedAt, cancellationToken);
@@ -52,10 +51,10 @@ namespace Home.Infrastructure.Jobs.PostSyncJob
             try
             {
                 var response = await _clientService.GetAsync("PublishedClient", $"RepoDetails/Batch?LastId={lastId}&BatchSize={batchSize}");
-                var batchData = await response.ToResponseAsync<ListResponse<BatchPostResponse>>();
+                var batchData = await response.ToObjectAsync<ListResponse<BatchPostResponse>>();
 
-                var count = batchData?.Value?.Count ?? 0;
-                var data = batchData?.Value?.Data;
+                var count = batchData?.Count ?? 0;
+                var data = batchData?.Data ?? null;
 
                 if (count <= 0 || data == null || data.Count == 0)
                 {
@@ -69,24 +68,27 @@ namespace Home.Infrastructure.Jobs.PostSyncJob
                 var upsertCommand = new MergePostCommand { Models = models };
                 var upsertResult = await mediator.Send(upsertCommand, cancellationToken);
 
-                var startId = data.FirstOrDefault()?.RepoDetailsId ?? 0;
-                var endId = data.LastOrDefault()?.RepoDetailsId ?? 0;
+                var startId = data.FirstOrDefault()?.ProcessedPostId ?? 0;
+                var endId = data.LastOrDefault()?.ProcessedPostId ?? 0;
+
+                if(upsertResult == null || upsertResult.Data)
+                {
+                    var jobCommand = new UpsertBatchJobStatusCommand
+                    {
+                        BatchId = item.BatchId,
+                        BatchSize = batchSize,
+                        StartId = startId,
+                        LastId = endId,
+                        RecordCount = count,
+                        ExecutionStartedAt = executionStartedAt,
+                        ExecutionEndedAt = DateTime.UtcNow,
+                        Status = StatusEnum.Succeeded.ToString()
+                    };
+
+                    await mediator.Send(jobCommand, cancellationToken);
+                }
 
                 var status = (upsertResult != null && upsertResult.Data) ? StatusEnum.Succeeded.ToString() : StatusEnum.Failed.ToString();
-
-                var jobCommand = new UpsertBatchJobStatusCommand
-                {
-                    BatchId = item.BatchId,
-                    BatchSize = batchSize,
-                    StartId = startId,
-                    LastId = endId,
-                    RecordCount = count,
-                    ExecutionStartedAt = executionStartedAt,
-                    ExecutionEndedAt = DateTime.UtcNow,
-                    Status = status
-                };
-
-                await mediator.Send(jobCommand, cancellationToken);
 
                 if (status == StatusEnum.Succeeded.ToString())
                 {
@@ -107,8 +109,8 @@ namespace Home.Infrastructure.Jobs.PostSyncJob
                     {
                         BatchId = item.BatchId,
                         BatchSize = batchSize,
-                        StartId = 0,
-                        LastId = 0,
+                        StartId = item.StartId,
+                        LastId = item.LastId,
                         RecordCount = 0,
                         ExecutionStartedAt = executionStartedAt,
                         ExecutionEndedAt = DateTime.UtcNow,

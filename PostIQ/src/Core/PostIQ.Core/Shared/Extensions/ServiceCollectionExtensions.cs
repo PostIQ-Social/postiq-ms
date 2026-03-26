@@ -1,7 +1,9 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace PostIQ.Core.Shared.Extensions
@@ -81,15 +83,34 @@ namespace PostIQ.Core.Shared.Extensions
             return services;
         }
 
-        private static IServiceCollection RegisterAutoMapper(this IServiceCollection services, Assembly[] assemblies)
+        private static IServiceCollection RegisterAutoMapper(
+            this IServiceCollection services,
+            params Assembly[] assemblies)
         {
             if (assemblies == null || assemblies.Length == 0)
+            {
                 assemblies = new[] { Assembly.GetExecutingAssembly() };
-            IEnumerable<Assembly> assemblyEnumerable = assemblies;
-            services.AddAutoMapper(assemblyEnumerable);
+            }
+
+            services.AddAutoMapper((serviceProvider, cfg) =>
+            {
+                cfg.AddMaps(assemblies);
+            }, assemblies);
+
+            
 
             return services;
         }
+
+        //private static IServiceCollection RegisterAutoMapper(this IServiceCollection services, Assembly[] assemblies)
+        //{
+        //    if (assemblies == null || assemblies.Length == 0)
+        //        assemblies = new[] { Assembly.GetExecutingAssembly() };
+        //    IEnumerable<Assembly> assemblyEnumerable = assemblies;
+        //    services.AddAutoMapper(assemblyEnumerable);
+
+        //    return services;
+        //}
 
         private static IServiceCollection RegisterMediatR(this IServiceCollection services, Assembly[] assemblies)
         {

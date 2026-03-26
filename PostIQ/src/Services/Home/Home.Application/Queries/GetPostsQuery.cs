@@ -1,4 +1,5 @@
 ﻿using Home.Application.Response;
+using Home.Core.Entities;
 using MediatR;
 using PostIQ.Core.Response;
 using System;
@@ -7,8 +8,5 @@ using System.Text;
 
 namespace Home.Application.Queries
 {
-    public class GetLastJobQuery : IRequest<SingleResponse<LastBatchJobResponse>>
-    {
-        public string Status { get; set; }
-    }
+    public record GetPostsQuery(int pageNo, long pageSize) : IRequest<ListResponse<PostResponse>>;
 }
