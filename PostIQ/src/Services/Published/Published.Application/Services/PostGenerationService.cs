@@ -71,12 +71,21 @@ namespace Published.Application.Services
 
             contextBuilder.AppendLine();
             contextBuilder.AppendLine("Requirements for the post:");
+            contextBuilder.AppendLine("- The response MUST be formatted in GitHub-flavored Markdown");
             contextBuilder.AppendLine("- Make it catchy and attention-grabbing");
             contextBuilder.AppendLine("- Keep it concise (2-3 paragraphs max)");
             contextBuilder.AppendLine("- Use engaging language and relevant emojis");
+            contextBuilder.AppendLine("- Use **bold**, _italics_, headings, lists, and links where appropriate");
+            contextBuilder.AppendLine("- Do not use <br> tags or raw HTML.");
+            contextBuilder.AppendLine("- Use blank lines (`\\n\\n`) for paragraph breaks.\r\n");
             contextBuilder.AppendLine("- Incorporate the provided call-to-action naturally");
-            contextBuilder.AppendLine("- Include the source URL at the end (Read more: [URL])");
+            contextBuilder.AppendLine("- Format all links as Markdown hyperlinks with descriptive titles.");
+            contextBuilder.AppendLine("- Do not show raw URLs. Instead, use the article title or a short descriptive phrase as the link text.");
+            contextBuilder.AppendLine("- Example: **Read more:** [Let’s Build a gRPC Microservice in .NET (Step by Step)](https://medium.com/...)");
             contextBuilder.AppendLine("- Add the provided hashtags at the very end");
+            contextBuilder.AppendLine("- Format hashtags as Markdown links that point to a hashtag search page.");
+            contextBuilder.AppendLine("- Example: [#DotNet](/dotnet)");
+            contextBuilder.AppendLine("- Do not output plain #hashtags; always make them clickable links.");
             contextBuilder.AppendLine("- Make it suitable for social media (LinkedIn, Twitter, etc.)");
             contextBuilder.AppendLine("- Maintain a professional yet conversational tone");
             contextBuilder.AppendLine("- Ensure the post is self-contained and complete");
