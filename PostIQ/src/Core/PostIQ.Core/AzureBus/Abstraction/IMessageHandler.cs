@@ -8,6 +8,7 @@ namespace PostIQ.Core.AzureBus.Abstraction
     public interface IMessageHandler
     {
         /// <summary>
+        /// Pull message for background processing - background process based.
         /// Implement this interface to handle messages of type <typeparamref name="TMessage"/>.
         /// Register one handler per queue/subscription via DI.
         /// </summary>

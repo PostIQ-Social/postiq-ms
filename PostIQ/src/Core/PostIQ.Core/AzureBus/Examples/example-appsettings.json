@@ -1,0 +1,134 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "AzServiceBus": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+
+  "AzureServiceBus": {
+    // --- Authentication (pick one) --------------------------
+    // Option 1: Connection string (dev / test)
+    "ConnectionString": "Endpoint=sb://your-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_KEY",
+
+    // Option 2: Managed Identity / DefaultAzureCredential (production)
+    // "FullyQualifiedNamespace": "your-namespace.servicebus.windows.net",
+
+    // --- Transport ------------------------------------------
+    // AmqpTcp (default, best perf) or AmqpWebSockets (firewall-friendly)
+    "TransportType": "AmqpTcp",
+
+    // --- Global retry policy --------------------------------
+    "Retry": {
+      "Mode": "Exponential", // Fixed | Exponential
+      "MaxRetries": 3,
+      "DelaySeconds": 0.8,
+      "MaxDelaySeconds": 60,
+      "TryTimeoutSeconds": 60
+    },
+
+    // --- Health checks --------------------------------------
+    "EnableHealthChecks": true,
+    "HealthCheckTimeoutSeconds": 10,
+
+    // --- Queues ---------------------------------------------
+    "Queues": {
+      // Logical name used in code -> maps to Azure queue name
+      "Orders": {
+        "QueueName": "orders-queue",
+        "SenderIdentifier": "order-service-sender",
+        "MaxConcurrentCalls": 5,
+        "AutoCompleteMessages": true,
+        "PrefetchCount": 10,
+        "ReceiveMode": "PeekLock", // PeekLock | ReceiveAndDelete
+        "MaxWaitTimeSeconds": 60,
+        "MaxAutoLockRenewalDurationSeconds": 300,
+        "SubQueue": "None", // None | DeadLetter | TransferDeadLetter
+        "EnableSessions": false,
+        "MaxConcurrentSessions": 8,
+        "MaxConcurrentCallsPerSession": 1,
+        "SessionIdleTimeoutSeconds": 0,
+        "MaxMessagesBatch": 10,
+        "MaxDeliveryCount": 10,
+        "AutoStartProcessor": true
+      },
+
+      "Payments": {
+        "QueueName": "payments-queue",
+        "MaxConcurrentCalls": 3,
+        "AutoCompleteMessages": false,
+        "PrefetchCount": 5,
+        "ReceiveMode": "PeekLock",
+        "MaxAutoLockRenewalDurationSeconds": 600,
+        "MaxDeliveryCount": 5,
+        "AutoStartProcessor": true
+      },
+
+      // Example: dead-letter queue reader
+      "OrdersDLQ": {
+        "QueueName": "orders-queue",
+        "SubQueue": "DeadLetter",
+        "MaxConcurrentCalls": 1,
+        "AutoCompleteMessages": false,
+        "AutoStartProcessor": true
+      },
+
+      // Example: session-enabled queue
+      "SessionOrders": {
+        "QueueName": "session-orders-queue",
+        "EnableSessions": true,
+        "MaxConcurrentSessions": 4,
+        "MaxConcurrentCallsPerSession": 1,
+        "AutoCompleteMessages": true,
+        "AutoStartProcessor": true
+      }
+    },
+
+    // --- Topics ---------------------------------------------
+    "Topics": {
+      "Notifications": {
+        "TopicName": "notifications-topic",
+        "SenderIdentifier": "notification-publisher",
+
+        "Subscriptions": {
+          "EmailHandler": {
+            "SubscriptionName": "email-subscription",
+            "MaxConcurrentCalls": 3,
+            "AutoCompleteMessages": true,
+            "PrefetchCount": 5,
+            "ReceiveMode": "PeekLock",
+            "MaxAutoLockRenewalDurationSeconds": 300,
+            "SubQueue": "None",
+            "EnableSessions": false,
+            "MaxConcurrentSessions": 8,
+            "MaxConcurrentCallsPerSession": 1,
+            "SessionIdleTimeoutSeconds": 0,
+            "MaxMessagesBatch": 10,
+            "AutoStartProcessor": true
+          },
+          "SmsHandler": {
+            "SubscriptionName": "sms-subscription",
+            "MaxConcurrentCalls": 2,
+            "AutoCompleteMessages": true,
+            "AutoStartProcessor": true
+          }
+        }
+      },
+
+      "AuditEvents": {
+        "TopicName": "audit-events-topic",
+        "Subscriptions": {
+          "AuditLogger": {
+            "SubscriptionName": "audit-log-subscription",
+            "MaxConcurrentCalls": 10,
+            "AutoCompleteMessages": true,
+            "PrefetchCount": 20,
+            "AutoStartProcessor": true
+          }
+        }
+      }
+    }
+  }
+}

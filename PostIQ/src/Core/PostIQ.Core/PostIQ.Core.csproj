@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <Folder Include="AI\Interface\" />
+    <Folder Include="AzureBus\Examples\Handlers\" />
+    <Folder Include="AzureBus\Examples\Controllers\" />
+    <Folder Include="AzureBus\Examples\Models\" />
     <Folder Include="Shared\Converters\" />
     <Folder Include="Shared\Behaviors\" />
   </ItemGroup>
