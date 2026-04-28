@@ -65,6 +65,7 @@
     <Folder Include="Security\" />
     <Folder Include="Home" />
     <Folder Include="Home\Tables" />
+    <Folder Include="Auth" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="User\Tables\Published.sql" />
@@ -80,5 +81,9 @@
     <Build Include="Home\Tables\Posts.sql" />
     <Build Include="Home\Tables\BatchJobStatus.sql" />
     <Build Include="Published\Tables\ProcessedPosts.sql" />
+    <Build Include="Security\Auth.sql" />
+    <Build Include="Auth\User.sql" />
+    <Build Include="Auth\SecurityTokens.sql" />
+    <Build Include="Auth\RefreshTokens.sql" />
   </ItemGroup>
 </Project>
