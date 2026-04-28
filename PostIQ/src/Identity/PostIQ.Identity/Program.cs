@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using Microsoft.OpenApi;
 using PostIQ.Identity.Data;
+using PostIQ.Identity.Middleware;
 using PostIQ.Identity.Options;
 using PostIQ.Identity.Services;
 using System.Text;
@@ -29,21 +27,6 @@ builder.Services.AddSingleton<TotpService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o =>
-    {
-        o.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(signingBytes),
-            ValidateIssuer = true,
-            ValidIssuer = jwtSection["Issuer"],
-            ValidateAudience = true,
-            ValidAudience = jwtSection["Audience"],
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -60,17 +43,10 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT"
     });
-    //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    //{
-    //    {
-    //        new OpenApiSecurityScheme
-    //        {
-    //            Scheme = "Bearer",
-    //            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-    //        },
-    //        Array.Empty<string>()
-    //    }
-    //});
+    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+    });
 });
 
 builder.Services.AddRateLimiter(o =>
@@ -102,10 +78,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRateLimiter();
-app.UseAuthentication();
-app.UseAuthorization();
 
-app.MapControllers().RequireRateLimiting("auth");
+app.UseRouting();
+
+app.UseRateLimiter();
+
+app.UseJwtAuthorization();  
+
+app.UseAuthorization();     
+
+app.MapControllers();
+
+//app.MapControllers().RequireRateLimiting("auth");
 
 app.Run();
