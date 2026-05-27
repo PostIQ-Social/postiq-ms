@@ -1,0 +1,33 @@
+﻿{
+  "HttpClientSettings": {
+    "Clients": {
+      "ApiServer": {
+        "BaseAddress": "https://httpbin.org",
+        "Timeout": "00:05:00",
+        "BufferSize": 81920,
+        "MaxResponseContentBufferSize": 0,
+        "UseHttp2": true,
+        "AutomaticDecompression": true,
+        "DefaultHeaders": {
+          "Accept": "application/json",
+          "User-Agent": "ttpClient-Example/1.0"
+        }
+      },
+      "LargeFileClient": {
+        "BaseAddress": "https://httpbin.org",
+        "Timeout": "02:00:00",
+        "BufferSize": 262144,
+        "MaxResponseContentBufferSize": 8,
+        "DefaultHeaders": {
+          "User-Agent": "HttpClient-LargeFile/19"
+        }
+      },
+      "UploadClient": {
+        "BaseAddress": "https://httpbin.org",
+        "Timeout": "02:00:00",
+        "BufferSize": 262144,
+        "DefaultHeaders": {}
+      }
+    }
+  }
+}

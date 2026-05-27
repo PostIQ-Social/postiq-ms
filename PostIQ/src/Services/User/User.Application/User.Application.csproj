@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Commands\Insert\**" />
+    <Compile Remove="Commands\Update\**" />
+    <EmbeddedResource Remove="Commands\Insert\**" />
+    <EmbeddedResource Remove="Commands\Update\**" />
+    <None Remove="Commands\Insert\**" />
+    <None Remove="Commands\Update\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\User.Core\User.Core.csproj" />
+  </ItemGroup>
+
+</Project>

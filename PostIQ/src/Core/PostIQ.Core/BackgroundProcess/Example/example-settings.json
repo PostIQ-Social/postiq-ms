@@ -1,0 +1,32 @@
+﻿{
+  "BackgroundJobs": {
+    "Defaults": {
+      "Enabled": true,
+      "QueueSize": 100,
+      "MaxConcurrentConsumers": 5,
+      "FullMode": "Wait",
+      "ProductionIntervalMs": 60000
+    },
+    "Jobs": {
+      "ExampleSync": {
+        "Enabled": true,
+        "Schedule": "1min",
+        "QueueSize": 50,
+        "MaxConcurrentConsumers": 3,
+        "FullMode": "Wait"
+      },
+      "ExampleHourly": {
+        "Enabled": true,
+        "Schedule": "1hour",
+        "QueueSize": 200,
+        "MaxConcurrentConsumers": 5
+      },
+      "ExampleCron": {
+        "Enabled": true,
+        "Schedule": "*/15 * * * *",
+        "QueueSize": 100,
+        "MaxConcurrentConsumers": 4
+      }
+    }
+  }
+}
