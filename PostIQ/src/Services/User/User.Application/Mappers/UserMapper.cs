@@ -8,9 +8,9 @@ namespace User.Application.Mappers
     {
         public UserMapper()
         {
-            CreateMap<Users, UserResponse>().ConstructUsing(src => new UserResponse(src.UserId, 
-                                                                        src.UserDetail.FirstName, 
-                                                                        src.UserDetail.LastName));
+            CreateMap<UserDetail, UserResponse>().ConstructUsing(src => new UserResponse(src.UserId, 
+                                                                        src.FirstName, 
+                                                                        src.LastName));
         }
 
     }

@@ -7,7 +7,7 @@ public partial class UserDetail
 {
     public long UserDetailId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string FirstName { get; set; } = null!;
 
@@ -27,5 +27,4 @@ public partial class UserDetail
 
     public long? UpdatedBy { get; set; }
 
-    public virtual Users UserDetailNavigation { get; set; } = null!;
 }

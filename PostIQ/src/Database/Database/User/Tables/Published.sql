@@ -9,6 +9,5 @@
     [UpdatedOn]   DATETIME      NULL,
     [UpdatedBy]   BIGINT        NULL,
     CONSTRAINT [PK_Published] PRIMARY KEY CLUSTERED ([PublishedId] ASC),
-    CONSTRAINT [FK_Published_User] FOREIGN KEY ([UserId]) REFERENCES [User].[Users] ([UserId])
 );
 

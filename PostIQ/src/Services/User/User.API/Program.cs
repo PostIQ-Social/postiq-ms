@@ -2,7 +2,6 @@ using PostIQ.Core.Shared.Extensions;
 using User.Infrastructure.Extensions;
 using System.Threading.Channels;
 using User.Infrastructure.Services;
-using User.Application.BackgroundServices;
 using User.Application.Commands;
 using User.Core.IServices;
 
@@ -19,20 +18,10 @@ var services = builder.Services;
     services.AddSwaggerGen();
     services.AddDbContextExtension(configuration);
     services.AddServiceCollectionExtensions(configuration,
-        typeof(User.Core.Entities.Users).Assembly,
+        typeof(User.Core.Entities.UserDetail).Assembly,
         typeof(User.Application.Handlers.GetUserByIdHandler).Assembly,
         typeof(User.Infrastructure.Repositories.UserRepository).Assembly        
     );
-
-    // Repositories
-
-    // Services
-    services.AddHttpClient<MediumSyncService>();
-    services.AddScoped<ISyncService, MediumSyncService>();
-
-    // Background Jobs
-    services.AddSingleton(Channel.CreateUnbounded<SyncContentCommand>());
-    services.AddHostedService<SyncWorker>();
 }
 
 var app = builder.Build();

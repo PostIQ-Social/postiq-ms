@@ -71,10 +71,8 @@
   <ItemGroup>
     <Build Include="User\Tables\Published.sql" />
     <Build Include="User\Tables\UserDetails.sql" />
-    <Build Include="User\Tables\Users.sql" />
     <Build Include="Published\Tables\Job.sql" />
     <Build Include="Published\Tables\RepoDetails.sql" />
-    <Build Include="User\Tables\Posts.sql" />
     <Build Include="Published\Tables\Repos.sql" />
     <Build Include="Security\Published.sql" />
     <Build Include="Security\User.sql" />

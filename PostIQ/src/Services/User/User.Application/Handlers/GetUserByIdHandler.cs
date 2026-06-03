@@ -12,24 +12,21 @@ namespace User.Application.Handlers
 {
     public class GetUserByIdHandler : IRequestHandler<GetUIserByIdQuery, SingleResponse<UserResponse>>
     {
-        private readonly IRepositoryAsync<Users> _userAsync;
+        private readonly IRepositoryAsync<UserDetail> _userAsync;
         private readonly IMapper _mapper;
 
         public GetUserByIdHandler(IUnitOfWork<UserDBContext> uow, IMapper mapper)
         {
-            _userAsync = uow.GetRepositoryAsync<Users>();
+            _userAsync = uow.GetRepositoryAsync<UserDetail>();
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-#nullable disable
 
         public async Task<SingleResponse<UserResponse>> Handle(GetUIserByIdQuery request, CancellationToken cancellationToken)
         {
             var response = new SingleResponse<UserResponse>(null);
             var result = await _userAsync.SingleOrDefaultAsync(
-                x => x.UserId == request.UserId && x.IsActive == true,
-                null,
-                i => i.Include(x => x.UserDetail));
+                x => x.UserId == request.UserId && x.IsActive == true);
 
             if (result == null)
             {
@@ -40,12 +37,10 @@ namespace User.Application.Handlers
             // Construct safely from possibly-null UserDetail
             response.Data = new UserResponse(
                 result.UserId,
-                result.UserDetail?.FirstName ?? string.Empty,
-                result.UserDetail?.LastName ?? string.Empty);
+                result.FirstName ?? string.Empty,
+                result.LastName ?? string.Empty);
 
             return response;
         }
-
-#nullable restore
     }
 }

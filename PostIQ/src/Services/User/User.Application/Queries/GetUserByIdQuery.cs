@@ -9,5 +9,5 @@ using User.Application.Response;
 
 namespace User.Application.Queries
 {
-    public record GetUIserByIdQuery(long UserId) : IRequest<SingleResponse<UserResponse>>;
+    public record GetUIserByIdQuery(Guid UserId) : IRequest<SingleResponse<UserResponse>>;
 }

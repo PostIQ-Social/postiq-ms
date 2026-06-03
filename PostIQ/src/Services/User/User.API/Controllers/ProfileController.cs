@@ -19,7 +19,7 @@ namespace User.API.Controllers
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(long id)
+        public async Task<IActionResult> Get(Guid id)
         {
             GetUIserByIdQuery query = new GetUIserByIdQuery(id);
             var result = await Mediator.Send(query);
@@ -42,13 +42,6 @@ namespace User.API.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-        }
-
-        [HttpPost("sync")]
-        public async Task<IActionResult> Sync([FromBody] Application.Commands.SyncContentCommand command)
-        {
-            await Mediator.Send(command);
-            return Accepted();
         }
 
         [HttpGet("{userId}/posts")]

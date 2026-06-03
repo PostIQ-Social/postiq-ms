@@ -23,5 +23,4 @@ public partial class Published
 
     public long? UpdatedBy { get; set; }
 
-    public virtual Users User { get; set; } = null!;
 }
