@@ -83,7 +83,7 @@ app.UseRouting();
 
 app.UseRateLimiter();
 
-app.UseJwtAuthorization();  
+app.UseMiddleware<JwtAuthorizationMiddleware>();
 
 app.UseAuthorization();     
 

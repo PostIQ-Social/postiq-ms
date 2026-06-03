@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AzureBus\**" />
+    <Compile Remove="Middlewares\Jwt\**" />
+    <EmbeddedResource Remove="AzureBus\**" />
+    <EmbeddedResource Remove="Middlewares\Jwt\**" />
+    <None Remove="AzureBus\**" />
+    <None Remove="Middlewares\Jwt\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
@@ -26,9 +35,7 @@
 
   <ItemGroup>
     <Folder Include="AI\Interface\" />
-    <Folder Include="AzureBus\Examples\Handlers\" />
-    <Folder Include="AzureBus\Examples\Controllers\" />
-    <Folder Include="AzureBus\Examples\Models\" />
+    <Folder Include="Middlewares\" />
     <Folder Include="Shared\Converters\" />
     <Folder Include="Shared\Behaviors\" />
   </ItemGroup>

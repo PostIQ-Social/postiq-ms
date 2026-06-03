@@ -167,9 +167,9 @@ namespace PostIQ.Identity.Middleware
 
     public static class JwtAuthorizationMiddlewareExtensions
     {
-        public static IApplicationBuilder UseJwtAuthorization(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<JwtAuthorizationMiddleware>();
-        }
+        //public static IApplicationBuilder UseJwtAuthorization(this IApplicationBuilder app)
+        //{
+        //    return app.UseMiddleware<JwtAuthorizationMiddleware>();
+        //}
     }
 }

@@ -1,9 +1,5 @@
 using PostIQ.Core.Shared.Extensions;
 using User.Infrastructure.Extensions;
-using System.Threading.Channels;
-using User.Infrastructure.Services;
-using User.Application.Commands;
-using User.Core.IServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
