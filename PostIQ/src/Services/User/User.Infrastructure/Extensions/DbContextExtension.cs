@@ -16,10 +16,8 @@ namespace User.Infrastructure.Extensions
                 options.UseSqlServer(connectionString, o =>
                 {
                     o.UseCompatibilityLevel(120);
-                    o.MigrationsAssembly("User.API");
                 });
             }).AddUnitOfWork<UserDBContext>();
-
             return services;
         }
     }
