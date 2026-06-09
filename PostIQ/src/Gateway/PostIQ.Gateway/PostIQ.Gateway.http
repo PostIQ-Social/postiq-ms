@@ -1,0 +1,6 @@
+@PostIQ.Gateway_HostAddress = http://localhost:5199
+
+GET {{PostIQ.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

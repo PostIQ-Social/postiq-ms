@@ -1,0 +1,141 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postiq-identity-api.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Patch", "Options" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 150
+      },
+      "AllowedScopes": [],
+      "Priority": 1,
+      "Timeout": 30000
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postiq-user-api.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Patch", "Options" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 150
+      },
+      "Priority": 1,
+      "Timeout": 30000
+    },
+    {
+      "DownstreamPathTemplate": "/api/home/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postiq-home-api.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/home/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Patch", "Options" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 150
+      },
+      "Priority": 1,
+      "Timeout": 30000
+    },
+    {
+      "DownstreamPathTemplate": "/api/published/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postiq-published-api.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/api/published/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Patch", "Options" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 150
+      },
+      "Priority": 1,
+      "Timeout": 30000
+    },
+    {
+      "DownstreamPathTemplate": "/health",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postiq-identity-api.azurewebsites.net",
+          "Port": 443
+        }
+      ],
+      "UpstreamPathTemplate": "/health",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AllowedScopes": [],
+      "Priority": 2,
+      "Timeout": 10000
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://postiq-gateway.azurewebsites.net",
+    "RateLimitOptions": {
+      "ClientIdHeader": "X-Client-Id",
+      "QuotaExceededMessage": "API rate limit exceeded. Please try again later.",
+      "RateLimitCounterPrefix": "ocelot-prod",
+      "DisableRateLimitHeaders": false
+    },
+    "RequestIdKey": "OcelotRequestId",
+    "ServiceDiscoveryProvider": {
+      "Type": "ConfigurationProvider",
+      "Namespace": "PostIQ"
+    },
+    "Logging": {
+      "LogLevel": "Warning"
+    },
+    "DownstreamScheme": "https",
+    "HttpHandlerOptions": {
+      "AllowAutoRedirect": false,
+      "UseTracing": true,
+      "UseProxy": true,
+      "MaxConnectionsPerServer": 200,
+      "PooledConnectionLifetime": 300
+    },
+    "LoadBalancerOptions": {
+      "Type": "LeastConnection"
+    }
+  }
+}
