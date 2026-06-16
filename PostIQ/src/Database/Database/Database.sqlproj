@@ -84,5 +84,6 @@
     <Build Include="Auth\Tables\User.sql" />
     <Build Include="Auth\Tables\SecurityTokens.sql" />
     <Build Include="Auth\Tables\RefreshTokens.sql" />
+    <Build Include="User\Tables\UserReferral.sql" />
   </ItemGroup>
 </Project>
