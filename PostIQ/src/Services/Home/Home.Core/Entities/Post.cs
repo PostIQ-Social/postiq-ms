@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Home.Core.Entities;
@@ -34,4 +34,12 @@ public partial class Post
     public DateTime? UpdatedOn { get; set; }
 
     public long? UpdatedBy { get; set; }
+
+    public int LikeCount { get; set; }
+
+    public int CommentCount { get; set; }
+
+    public virtual ICollection<PostLike> Likes { get; set; } = new List<PostLike>();
+
+    public virtual ICollection<PostComment> Comments { get; set; } = new List<PostComment>();
 }

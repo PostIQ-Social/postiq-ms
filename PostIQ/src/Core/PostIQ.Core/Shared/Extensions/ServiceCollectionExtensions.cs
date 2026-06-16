@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +21,7 @@ namespace PostIQ.Core.Shared.Extensions
                 .RegisterBySuffix(assemblies, "Service")
 
                 // misc registrations
-                .RegisterMiddlewares(assemblies)
+                //.RegisterMiddlewares(assemblies)
                 .RegisterAutoMapper(assemblies)
                 .RegisterMediatR(assemblies)
 
@@ -58,7 +58,8 @@ namespace PostIQ.Core.Shared.Extensions
         private static IServiceCollection RegisterHostedServices(this IServiceCollection services, Assembly[] assemblies)
         {
             var workers = GetConcreteTypes(assemblies)
-                .Where(t => typeof(BackgroundService).IsAssignableFrom(t))
+                .Where(t => typeof(BackgroundService).IsAssignableFrom(t)
+                            && (t.Namespace == null || !t.Namespace.StartsWith("PostIQ.Core", StringComparison.Ordinal)))
                 .ToList();
 
             foreach (var worker in workers)

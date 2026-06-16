@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Published.Core.Entities;
@@ -28,11 +28,13 @@ public partial class PublishDbContext : DbContext
     {
         modelBuilder.Entity<Job>(entity =>
         {
+            entity.ToTable("Job", "Published");
             entity.HasKey(e => e.JobId).HasName("PK_Published.Job");
         });
 
         modelBuilder.Entity<Repo>(entity =>
         {
+            entity.ToTable("Repos", "Published");
             entity.HasKey(e => e.RepoId).HasName("PK_Published_Repo.Job");
 
             entity.HasOne(d => d.Job).WithMany(p => p.Repos)
@@ -42,6 +44,7 @@ public partial class PublishDbContext : DbContext
 
         modelBuilder.Entity<RepoDetail>(entity =>
         {
+            entity.ToTable("RepoDetails", "Published");
             entity.HasKey(e => e.RepoDetailsId).HasName("PK_Publish.RepoDetails");
 
             entity.HasOne(d => d.Repo).WithMany(p => p.RepoDetails)
@@ -51,6 +54,7 @@ public partial class PublishDbContext : DbContext
 
         modelBuilder.Entity<ProcessedPost>(entity =>
         {
+            entity.ToTable("ProcessedPosts", "Published");
             entity.HasKey(e => e.ProcessedPostId).HasName("PK_Published.ProcessedPost");
 
             entity.HasOne(d => d.Repo).WithMany(p => p.ProcessedPosts)

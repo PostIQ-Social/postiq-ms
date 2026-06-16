@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -23,5 +23,7 @@ namespace Home.Application.Response
         public string? RepoUrl { get; set; }
 
         public DateTime PostedOn { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
     }
 }

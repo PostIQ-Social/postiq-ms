@@ -1,4 +1,4 @@
-﻿CREATE TABLE [Home].[Posts](
+CREATE TABLE [Home].[Posts](
 	[Id] [bigint] IDENTITY(1,1) NOT NULL,
 	[ProcessedPostId] [bigint] NOT NULL,
 	[UserId] [bigint] NOT NULL,
@@ -14,6 +14,8 @@
 	[CreatedBy] [bigint] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[UpdatedBy] [bigint] NULL,
+	[LikeCount] [int] NOT NULL DEFAULT 0,
+	[CommentCount] [int] NOT NULL DEFAULT 0,
  CONSTRAINT [PK_User.Posts] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

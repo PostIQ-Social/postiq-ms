@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Published.Application.Commands;
 using Published.Application.Response;
 using Published.Core.Entities;
 
@@ -16,8 +15,6 @@ namespace Published.Application.Mappers
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Headline != null ? src.Headline : src.OriginalTitle))
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.OriginalAuthor))
                 .ForMember(dest => dest.PostedOn, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.PostedOn : src.CreatedOn));
-
-            CreateMap<AddJobCommand, Job>();
         }
     }
 }
