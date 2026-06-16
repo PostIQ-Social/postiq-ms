@@ -1,0 +1,19 @@
+CREATE TABLE [Home].[CommentLikes](
+	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[CommentId] [bigint] NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[CreatedOn] [datetime2] NOT NULL,
+ CONSTRAINT [PK_CommentLikes] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE [Home].[CommentLikes] WITH CHECK ADD CONSTRAINT [FK_CommentLikes_PostComments_CommentId] FOREIGN KEY([CommentId])
+REFERENCES [Home].[PostComments] ([Id])
+ON DELETE CASCADE
+
+CREATE NONCLUSTERED INDEX [IX_CommentLikes_CommentId] ON [Home].[CommentLikes]
+(
+	[CommentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]

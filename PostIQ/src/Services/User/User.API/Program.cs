@@ -8,6 +8,16 @@ var configuration = builder.Configuration;
 var services = builder.Services;
 
 {
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowFrontend", builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
+
     services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     services.AddEndpointsApiExplorer();
@@ -30,6 +40,8 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowFrontend");
 
     app.UseAuthorization();
 

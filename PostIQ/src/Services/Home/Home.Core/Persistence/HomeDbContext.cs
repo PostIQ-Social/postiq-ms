@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Home.Core.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,12 @@ public partial class HomeDbContext : DbContext
     public virtual DbSet<BatchJobStatus> BatchJobStatuses { get; set; }
 
     public virtual DbSet<Post> Posts { get; set; }
+
+    public virtual DbSet<PostLike> PostLikes { get; set; }
+
+    public virtual DbSet<PostComment> PostComments { get; set; }
+
+    public virtual DbSet<CommentLike> CommentLikes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,6 +57,46 @@ public partial class HomeDbContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Title).HasMaxLength(100);
             entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<PostLike>(entity =>
+        {
+            entity.ToTable("PostLikes", "Home");
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne(d => d.Post)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PostComment>(entity =>
+        {
+            entity.ToTable("PostComments", "Home");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
+
+            entity.HasOne(d => d.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Self-referencing relationship for replies
+            entity.HasOne(d => d.ParentComment)
+                .WithMany(p => p.Replies)
+                .HasForeignKey(d => d.ParentCommentId)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<CommentLike>(entity =>
+        {
+            entity.ToTable("CommentLikes", "Home");
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne(d => d.Comment)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(d => d.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

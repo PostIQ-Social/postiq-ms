@@ -17,7 +17,20 @@ builder.Services.AddServiceCollectionExtensions(builder.Configuration,
     typeof(Home.Application.Handlers.GetLastJobHandler).Assembly,
     typeof(Home.Infrastructure.Jobs.PostSyncJob.PostSyncJobProcessor).Assembly);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
