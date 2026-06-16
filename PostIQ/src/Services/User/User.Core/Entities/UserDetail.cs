@@ -5,9 +5,9 @@ namespace User.Core.Entities;
 
 public partial class UserDetail
 {
-    public long UserDetailId { get; set; }
+    public long UserId { get; set; }
 
-    public Guid UserId { get; set; }
+    public Guid AuthId { get; set; }
 
     public string FirstName { get; set; } = null!;
 

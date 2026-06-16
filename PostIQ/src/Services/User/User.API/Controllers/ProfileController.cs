@@ -19,7 +19,7 @@ namespace User.API.Controllers
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> Get(long id)
         {
             GetUIserByIdQuery query = new GetUIserByIdQuery(id);
             var result = await Mediator.Send(query);

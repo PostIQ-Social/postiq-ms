@@ -19,6 +19,7 @@ public partial class UserDBContext : DbContext
     public virtual DbSet<Published> Publisheds { get; set; }
 
     public virtual DbSet<UserDetail> UserDetails { get; set; }
+    public virtual DbSet<UserReferral> UserReferrals { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,7 +47,7 @@ public partial class UserDBContext : DbContext
         {
             entity.ToTable("UserDetails", "User");
 
-            entity.Property(e => e.UserDetailId).ValueGeneratedNever();
+            entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
@@ -63,6 +64,10 @@ public partial class UserDBContext : DbContext
             entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
 
         });
+        modelBuilder.Entity<UserReferral>(entity =>
+        {
+			entity.ToTable("UserReferral", "User");
+		});
 
         OnModelCreatingPartial(modelBuilder);
     }

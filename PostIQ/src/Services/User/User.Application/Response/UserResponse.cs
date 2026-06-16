@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace User.Application.Response
 {
-    public record UserResponse(Guid UserId, string FirstName, string LastName);
+    public record UserResponse(long UserId, string FirstName, string LastName);
 }
