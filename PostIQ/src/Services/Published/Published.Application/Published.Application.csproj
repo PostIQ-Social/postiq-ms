@@ -10,8 +10,4 @@
     <ProjectReference Include="..\Published.Core\Published.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
-
 </Project>
