@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using User.Application.Commands;
 
 namespace User.API.Controllers
 {
@@ -10,5 +10,11 @@ namespace User.API.Controllers
     {
         public PublishController() { }
 
+        [HttpPost]
+        public async Task<IActionResult> AddOrUpdatePublished([FromBody] AddUpdatePublishedCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
     }
 }

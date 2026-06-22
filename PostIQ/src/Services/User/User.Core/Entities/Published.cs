@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
 namespace User.Core.Entities;
 
@@ -13,7 +12,7 @@ public partial class Published
 
     public string? BaseUrl { get; set; }
 
-    public string IsActive { get; set; } = null!;
+    public bool IsActive { get; set; }
 
     public DateTime CreatedOn { get; set; }
 

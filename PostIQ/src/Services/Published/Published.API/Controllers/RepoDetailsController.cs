@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using Published.Application.Commands;
 using Published.Application.Queries;
 
 namespace Published.API.Controllers
@@ -17,6 +18,13 @@ namespace Published.API.Controllers
                 BatchSize = BatchSize
             };
             var result = await Mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpPost("Job")]
+        public async Task<IActionResult> UpsertJob([FromBody] UpsertJobCommand command)
+        {
+            var result = await Mediator.Send(command);
             return Ok(result);
         }
     }
