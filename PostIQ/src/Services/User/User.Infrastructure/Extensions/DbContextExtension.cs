@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PostIQ.Core.Database.Extension;
+using PostIQ.Core.Shared.Extensions;
 using User.Core.Persistence;
 
 namespace User.Infrastructure.Extensions
@@ -10,14 +11,19 @@ namespace User.Infrastructure.Extensions
     {
         public static IServiceCollection AddDbContextExtension(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration["DefaultConnection"];
+            services.AddServiceCollectionExtensions(configuration,
+                typeof(User.Core.Entities.UserDetail).Assembly,
+                typeof(User.Application.Handlers.GetUserByIdHandler).Assembly,
+                typeof(User.Infrastructure.Repositories.UserRepository).Assembly
+            );
             services.AddDbContext<UserDBContext>(options =>
             {
-                options.UseSqlServer(connectionString, o =>
+                options.UseSqlServer(configuration.GetConnectionString("Default"), o =>
                 {
                     o.UseCompatibilityLevel(120);
                 });
             }).AddUnitOfWork<UserDBContext>();
+
             return services;
         }
     }

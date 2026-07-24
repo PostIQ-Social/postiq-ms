@@ -9,6 +9,7 @@ using PostIQ.Core.BackgroundProcess;
 using PostIQ.Core.BackgroundProcess.Interfaces;
 using PostIQ.Core.Database.Extension;
 using PostIQ.Core.HttpClientService.Extensions;
+using PostIQ.Core.Shared.Extensions;
 
 namespace Home.Infrastructure.Extensions
 {
@@ -22,16 +23,20 @@ namespace Home.Infrastructure.Extensions
             services.AddBackgroundJob(configuration);
             services.AddSingleton<IJobItemProcessor<LastBatchJobResponse>, PostSyncJobProcessor>();
             services.AddSingleton<IJobItemsProducer<LastBatchJobResponse>, PostSyncJobProducer>();
- 
 
-            var connectionString = configuration["DefaultConnection"];
             services.AddDbContext<HomeDbContext>(options =>
             {
-                options.UseSqlServer(connectionString, o =>
+                options.UseSqlServer(configuration.GetConnectionString("Default"), o =>
                 {
                     o.UseCompatibilityLevel(120);
                 });
             }).AddUnitOfWork<HomeDbContext>();
+
+            services.AddServiceCollectionExtensions(configuration,
+                typeof(Home.Core.Entities.Post).Assembly,
+                typeof(Home.Application.Handlers.GetLastJobHandler).Assembly,
+                typeof(Home.Infrastructure.Extensions.DbContextExtension).Assembly);
+
             return services;
         }
     }

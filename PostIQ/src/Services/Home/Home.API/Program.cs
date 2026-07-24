@@ -11,11 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContextExtension(builder.Configuration);
-builder.Services.AddServiceCollectionExtensions(builder.Configuration,
-    typeof(Home.Core.Entities.Post).Assembly,
-    typeof(Home.Application.Handlers.GetLastJobHandler).Assembly,
-    typeof(Home.Infrastructure.Jobs.PostSyncJob.PostSyncJobProcessor).Assembly);
 
 builder.Services.AddCors(options =>
 {
