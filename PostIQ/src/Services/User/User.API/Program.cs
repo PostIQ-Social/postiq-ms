@@ -1,3 +1,4 @@
+using PostIQ.Core.HttpClientService.Extensions;
 using PostIQ.Core.Shared.Extensions;
 using User.Infrastructure.Extensions;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,7 +19,7 @@ public partial class Job
     [StringLength(50)]
     public string Source { get; set; } = null!;
 
-    [StringLength(100)]
+    [StringLength(200)]
     public string BaseUrl { get; set; } = null!;
 
     [Unicode(false)]

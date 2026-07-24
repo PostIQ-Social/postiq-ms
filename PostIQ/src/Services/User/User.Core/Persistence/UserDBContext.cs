@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using User.Core.Entities;
@@ -28,14 +28,10 @@ public partial class UserDBContext : DbContext
         {
             entity.ToTable("Published", "User");
 
-            entity.Property(e => e.PublishedId).ValueGeneratedNever();
             entity.Property(e => e.BaseUrl)
-                .HasMaxLength(20)
+                .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
-            entity.Property(e => e.IsActive)
-                .HasMaxLength(100)
-                .IsUnicode(false);
             entity.Property(e => e.Source)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -47,8 +43,13 @@ public partial class UserDBContext : DbContext
         {
             entity.ToTable("UserDetails", "User");
 
-            entity.Property(e => e.UserId).ValueGeneratedNever();
+            entity.Property(e => e.UserId).ValueGeneratedOnAdd();
+            entity.Property(e => e.AuthId);
+            entity.Property(e => e.IsActive);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.ReferralCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -62,12 +63,30 @@ public partial class UserDBContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy);
+            entity.Property(e => e.UpdatedBy);
 
         });
         modelBuilder.Entity<UserReferral>(entity =>
         {
 			entity.ToTable("UserReferral", "User");
-		});
+
+            entity.Property(e => e.ReferralId).ValueGeneratedOnAdd();
+            entity.Property(e => e.UserId);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.ReferralCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.ReferredById);
+            entity.Property(e => e.IsActive);
+            entity.Property(e => e.CreatedBy);
+            entity.Property(e => e.UserName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.ReferredByName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
