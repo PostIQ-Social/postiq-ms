@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using User.Core.Entities;
@@ -28,14 +28,10 @@ public partial class UserDBContext : DbContext
         {
             entity.ToTable("Published", "User");
 
-            entity.Property(e => e.PublishedId).ValueGeneratedNever();
             entity.Property(e => e.BaseUrl)
-                .HasMaxLength(20)
+                .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
-            entity.Property(e => e.IsActive)
-                .HasMaxLength(100)
-                .IsUnicode(false);
             entity.Property(e => e.Source)
                 .HasMaxLength(50)
                 .IsUnicode(false);

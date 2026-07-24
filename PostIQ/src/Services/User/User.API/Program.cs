@@ -1,3 +1,4 @@
+using PostIQ.Core.HttpClientService.Extensions;
 using PostIQ.Core.Shared.Extensions;
 using User.Infrastructure.Extensions;
 
@@ -23,6 +24,7 @@ var services = builder.Services;
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
     services.AddDbContextExtension(configuration);
+    services.AddHttpClientService(configuration);
     services.AddServiceCollectionExtensions(configuration,
         typeof(User.Core.Entities.UserDetail).Assembly,
         typeof(User.Application.Handlers.GetUserByIdHandler).Assembly,
