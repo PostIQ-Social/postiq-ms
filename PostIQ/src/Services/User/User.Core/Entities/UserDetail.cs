@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace User.Core.Entities;
 
 public partial class UserDetail
 {
+    [Key]
     public long UserId { get; set; }
 
     public Guid AuthId { get; set; }
@@ -16,6 +18,8 @@ public partial class UserDetail
     public string LastName { get; set; } = null!;
 
     public string? Phone { get; set; }
+
+    public string ReferralCode { get; set; } = null!;
 
     public bool IsActive { get; set; }
 
