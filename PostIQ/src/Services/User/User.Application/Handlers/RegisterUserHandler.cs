@@ -46,7 +46,7 @@ namespace User.Application.Handlers
             var referralCode = request.ReferralCode.Trim().ToUpperInvariant();
 
             // 1. The referral code must belong to an active user.
-            var referrer = await _userRepo.SingleOrDefaultAsync(x => x.ReferralCode == referralCode && x.IsActive);
+            var referrer = await _userRepo.SingleOrDefaultAsync(x => x.ReferralCode.ToLower() == referralCode.ToLower() && x.IsActive);
 
             if (referrer == null)
             {
