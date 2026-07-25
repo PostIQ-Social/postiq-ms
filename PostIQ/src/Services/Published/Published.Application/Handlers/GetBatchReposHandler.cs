@@ -30,12 +30,12 @@ namespace Published.Application.Handlers
         public async Task<ListResponse<BatchRepoRes>> Handle(GetBatchReposQuery request, CancellationToken cancellationToken)
         {
             var result = await _processedPosts.GetListAsync(
-                predicate: x => x.ProcessedPostId > request.AfterId && x.IsActive,
+                predicate: x => x.IsActive,
                 orderBy: o => o.OrderBy(x => x.ProcessedPostId),
                 include: i => i.Include(p => p.Repo)
                                 .ThenInclude(r => r.Job),
-                index: -1, 
-                size: request.BatchSize,
+                index: request.PageNo - 1,
+                size: request.PageSize,
                 enableTracking: false);
 
            var response = _mapper.Map<ListResponse<BatchRepoRes>>(result);

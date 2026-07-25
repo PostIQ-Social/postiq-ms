@@ -9,7 +9,7 @@ namespace Published.Application.Queries
 {
     public record GetBatchReposQuery : IRequest<ListResponse<BatchRepoRes>>
     {
-        public long AfterId { get; init; }
-        public int BatchSize { get; init; }
+        public int PageNo { get; init; }
+        public int PageSize { get; init; } = 50;
     }
 }

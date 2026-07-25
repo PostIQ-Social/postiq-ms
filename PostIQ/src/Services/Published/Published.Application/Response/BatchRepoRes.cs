@@ -9,7 +9,7 @@ namespace Published.Application.Response
 {
     public record BatchRepoRes
     {
-        public long ProcessedPostId { get; set; }
+        public long Id { get; set; }
 
         public long UserId { get; set; }
 

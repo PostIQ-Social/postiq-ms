@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using Published.Application.Commands;
 using User.Application.Commands;
 
 namespace User.API.Controllers
@@ -11,9 +12,18 @@ namespace User.API.Controllers
         public PublishController() { }
 
         [HttpPost]
+        [Route("add-or-update")]
         public async Task<IActionResult> AddOrUpdatePublished([FromBody] AddUpdatePublishedCommand command)
         {
-            var result = await Mediator.Send(command);
+            var publish = await Mediator.Send(command);
+            var jobCommand = new UpsertJobCommand
+            {
+                UserId = command.UserId,
+                Source = command.Source,
+                BaseUrl = command.BaseUrl,
+                PublishedId = publish.Data,
+            };
+            var result = await Mediator.Send(jobCommand);
             return Ok(result);
         }
     }

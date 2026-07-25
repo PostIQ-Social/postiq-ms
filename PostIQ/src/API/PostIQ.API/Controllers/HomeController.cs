@@ -1,6 +1,7 @@
 using Home.Application.Queries;
 using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using Published.Application.Queries;
 
 namespace Home.API.Controllers
 {
@@ -11,7 +12,11 @@ namespace Home.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(int pageNo, int pageSize)
         {
-            var query = new GetPostsQuery(pageNo, pageSize);
+            var query = new GetBatchReposQuery
+            {
+                PageNo = pageNo,
+                PageSize = pageSize
+            };
             var result = await Mediator.Send(query);
             return Ok(result);
         }

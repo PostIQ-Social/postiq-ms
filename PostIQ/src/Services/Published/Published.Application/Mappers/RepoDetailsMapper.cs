@@ -15,7 +15,8 @@ namespace Published.Application.Mappers
                 .ForMember(dest => dest.RepoUrl, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.RepoUrl : null))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Headline != null ? src.Headline : src.OriginalTitle))
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.OriginalAuthor))
-                .ForMember(dest => dest.PostedOn, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.PostedOn : src.CreatedOn));
+                .ForMember(dest => dest.PostedOn, opt => opt.MapFrom(src => src.Repo != null ? src.Repo.PostedOn : src.CreatedOn))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ProcessedPostId));
 
 			CreateMap<AddJobCommand, Job>();
 		}
