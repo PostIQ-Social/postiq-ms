@@ -26,24 +26,6 @@ namespace User.API.Controllers
             return Ok(result);
         }
 
-        // POST api/<ProfileController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<ProfileController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ProfileController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-
         [HttpGet("{userId}/posts")]
         public async Task<IActionResult> GetPosts(long userId)
         {
