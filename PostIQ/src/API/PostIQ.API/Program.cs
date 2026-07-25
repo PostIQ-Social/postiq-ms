@@ -15,11 +15,23 @@ var services = builder.Services;
     services.AddAuthorization();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
+
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 }
 
 
 var app = builder.Build();
 {
+    app.UseCors("AllowAll");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
