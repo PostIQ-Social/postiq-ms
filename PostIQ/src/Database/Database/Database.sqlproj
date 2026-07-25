@@ -85,5 +85,9 @@
     <Build Include="Auth\Tables\SecurityTokens.sql" />
     <Build Include="Auth\Tables\RefreshTokens.sql" />
     <Build Include="User\Tables\UserReferral.sql" />
+    <Build Include="Home\Tables\PostsCount.sql" />
+    <Build Include="Home\Tables\PostLikes.sql" />
+    <Build Include="Home\Tables\PostComments.sql" />
+    <Build Include="Home\Tables\CommentLikes.sql" />
   </ItemGroup>
 </Project>
