@@ -31,5 +31,6 @@ namespace User.Application.Commands
 
         [Required, MaxLength(10)]
         public string ReferralCode { get; set; } = null!;
+        public Guid AuthId {  get; set; }
     }
 }

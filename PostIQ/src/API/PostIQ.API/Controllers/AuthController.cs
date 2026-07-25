@@ -18,6 +18,7 @@ namespace PostIQ.Identity.Controllers
         }
 
         [HttpPost("register")]
+        [NonAction]
         public async Task<IActionResult> Register([FromBody] RegisterRequest req, CancellationToken ct)
         {
             var r = await _auth.RegisterAsync(req, ct);

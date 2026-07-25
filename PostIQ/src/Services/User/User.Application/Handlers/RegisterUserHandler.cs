@@ -4,6 +4,7 @@ using PostIQ.Core.Database;
 using PostIQ.Core.HttpClientService.Extensions;
 using PostIQ.Core.HttpClientService.Services;
 using PostIQ.Core.Response;
+using PostIQ.Core.Shared.Encrypt;
 using User.Application.Commands;
 using User.Application.Contracts;
 using User.Application.Response;
@@ -22,15 +23,11 @@ namespace User.Application.Handlers
     /// </summary>
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, SingleResponse<RegisterUserResponse>>
     {
-        private const string IdentityClientName = "IdentityClient";
-        private const string IdentityRegisterPath = "api/auth/register";
-        private const string ReferralCodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         private const int ReferralCodeLength = 8;
 
         private readonly IUnitOfWork<UserDBContext> _uow;
         private readonly IRepositoryAsync<UserDetail> _userRepo;
         private readonly IRepositoryAsync<UserReferral> _referralRepo;
-        private readonly IBaseHttpClientService _clientService;
         private readonly ILogger<RegisterUserHandler> _logger;
 
         public RegisterUserHandler(
@@ -41,7 +38,6 @@ namespace User.Application.Handlers
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _userRepo = uow.GetRepositoryAsync<UserDetail>();
             _referralRepo = uow.GetRepositoryAsync<UserReferral>();
-            _clientService = clientService ?? throw new ArgumentNullException(nameof(clientService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -50,8 +46,7 @@ namespace User.Application.Handlers
             var referralCode = request.ReferralCode.Trim().ToUpperInvariant();
 
             // 1. The referral code must belong to an active user.
-            var referrer = await _userRepo.SingleOrDefaultAsync(
-                x => x.ReferralCode == referralCode && x.IsActive);
+            var referrer = await _userRepo.SingleOrDefaultAsync(x => x.ReferralCode == referralCode && x.IsActive);
 
             if (referrer == null)
             {
@@ -61,52 +56,23 @@ namespace User.Application.Handlers
             var userName = atIndex > 0 ? request.Email[..atIndex] : request.Email;
 
             // 2. Create the auth account in the Identity service.
-            var identityRequest = new IdentityRegisterRequest
-            {
-                Email = request.Email.Trim(),
-                Password = request.Password,
-                UserName = string.IsNullOrWhiteSpace(userName) ? null : userName.Trim(),
-                PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim(),
-            };
+            var PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
 
-            using var identityResponse = await _clientService.PostAsync(
-                IdentityClientName, IdentityRegisterPath, identityRequest, cancellationToken: cancellationToken);
-
-            if (!identityResponse.IsSuccessStatusCode)
-            {
-                var problem = await SafeReadProblemAsync(identityResponse, cancellationToken);
-                var message = string.IsNullOrWhiteSpace(problem?.Detail)
-                    ? "Unable to create the account. Please try again."
-                    : problem!.Detail!;
-
-                _logger.LogWarning("Identity registration failed (status={Status}): {Detail}", identityResponse.StatusCode, message);
-                return Failure(identityResponse.StatusCode == 409 ? 409 : 400, message);
-            }
-
-            var identityResult = await identityResponse.ToObjectAsync<IdentityRegisterResponse>();
-            if (identityResult == null || identityResult.UserId == Guid.Empty)
-            {
-                _logger.LogError("Identity registration succeeded but returned no auth id.");
-                return Failure(502, "Account service returned an invalid response.");
-            }
-
-            var authId = identityResult.UserId;
+            //var authId = identityResult.UserId;
             var now = DateTime.UtcNow;
 
             // 3-5. Persist profile, referral record and rotate the referrer's code atomically.
             await using var transaction = await _uow.Context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                var newUserCode = await GenerateUniqueReferralCodeAsync(cancellationToken);
-
                 var newUser = new UserDetail
                 {
-                    AuthId = authId,
+                    AuthId = request.AuthId,
                     FirstName = request.FirstName.Trim(),
                     MiddleName = string.IsNullOrWhiteSpace(request.MiddleName) ? null : request.MiddleName.Trim(),
                     LastName = request.LastName.Trim(),
-                    Phone = identityRequest.PhoneNumber,
-                    ReferralCode = newUserCode,
+                    Phone = PhoneNumber,
+                    ReferralCode = RandomGenerator.RandomOTP(8),
                     IsActive = true,
                     CreatedOn = now,
                     CreatedBy = referrer.UserId,
@@ -118,7 +84,7 @@ namespace User.Application.Handlers
                 var referral = new UserReferral
                 {
                     UserId = newUser.UserId,
-                    UserName = userName,
+                    UserName = $"{newUser.FirstName} {newUser.LastName}".Trim(),
                     ReferralCode = referralCode,
                     ReferredById = referrer.UserId,
                     ReferredByName = $"{referrer.FirstName} {referrer.MiddleName} {referrer.LastName}".Trim(),
@@ -130,7 +96,7 @@ namespace User.Application.Handlers
                 await _referralRepo.InsertAsync(referral, cancellationToken);
 
                 // Rotate the referrer's code so the same code cannot be reused.
-                referrer.ReferralCode = await GenerateUniqueReferralCodeAsync(cancellationToken);
+                referrer.ReferralCode = RandomGenerator.RandomOTP(8);
                 referrer.UpdatedOn = now;
                 referrer.UpdatedBy = newUser.UserId;
 
@@ -140,54 +106,13 @@ namespace User.Application.Handlers
                 _logger.LogInformation("Registered user {UserId} (auth {AuthId}) referred by {ReferrerId}.", newUser.UserId, authId, referrer.UserId);
 
                 return new SingleResponse<RegisterUserResponse>(
-                    new RegisterUserResponse(newUser.UserId, authId, newUser.ReferralCode));
+                    new RegisterUserResponse(newUser.UserId, request.AuthId, newUser.ReferralCode));
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Failed to persist registration for auth {AuthId}.", authId);
+                _logger.LogError(ex, "Failed to persist registration for auth {AuthId}.", request.AuthId);
                 return Failure(500, "Registration could not be completed. Please try again.");
-            }
-        }
-
-        private async Task<string> GenerateUniqueReferralCodeAsync(CancellationToken cancellationToken)
-        {
-            for (var attempt = 0; attempt < 10; attempt++)
-            {
-                var candidate = GenerateReferralCode();
-                var exists = await _userRepo.SingleOrDefaultAsync(
-                    x => x.ReferralCode == candidate, enableTracking: false);
-
-                if (exists == null)
-                {
-                    return candidate;
-                }
-            }
-
-            throw new InvalidOperationException("Unable to generate a unique referral code.");
-        }
-
-        private static string GenerateReferralCode()
-        {
-            var chars = new char[ReferralCodeLength];
-            for (var i = 0; i < ReferralCodeLength; i++)
-            {
-                chars[i] = ReferralCodeChars[System.Security.Cryptography.RandomNumberGenerator.GetInt32(ReferralCodeChars.Length)];
-            }
-
-            return new string(chars);
-        }
-
-        private static async Task<ProblemDetails?> SafeReadProblemAsync(
-            PostIQ.Core.HttpClientService.Models.HttpResponseResult response, CancellationToken cancellationToken)
-        {
-            try
-            {
-                return await response.ToObjectAsync<ProblemDetails>();
-            }
-            catch
-            {
-                return null;
             }
         }
 
