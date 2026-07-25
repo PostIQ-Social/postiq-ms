@@ -18,6 +18,20 @@ namespace Home.API.Controllers
                 PageSize = pageSize
             };
             var result = await Mediator.Send(query);
+            var postIds = result.Data.Select(r => r.Id).ToArray();
+            var countQuery = new GetPostCountQuery(postIds);
+            var countResult = await Mediator.Send(countQuery);
+
+            result.Data.ForEach(post =>
+            {
+                var postCount = countResult.Data.FirstOrDefault(c => c.PostId == post.Id);
+                if (postCount != null)
+                {
+                    post.LikeCount = postCount.LikeCount;
+                    post.CommentCount = postCount.CommentCount;
+                }
+            });
+
             return Ok(result);
         }
 

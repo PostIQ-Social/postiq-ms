@@ -20,6 +20,8 @@ public partial class HomeDbContext : DbContext
 
     public virtual DbSet<Post> Posts { get; set; }
 
+    public virtual DbSet<PostsCount> PostsCount { get; set; }
+
     public virtual DbSet<PostLike> PostLikes { get; set; }
 
     public virtual DbSet<PostComment> PostComments { get; set; }
@@ -28,6 +30,13 @@ public partial class HomeDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<PostsCount>(entity =>
+        {
+            entity.ToTable("PostsCount", "Home");
+            entity.HasKey(e => e.CountId);
+        });
+
+
         modelBuilder.Entity<BatchJobStatus>(entity =>
         {
             entity.HasKey(e => e.StatusId).HasName("PK_SyncJob");

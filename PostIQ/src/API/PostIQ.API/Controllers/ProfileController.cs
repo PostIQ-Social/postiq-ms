@@ -10,12 +10,6 @@ namespace User.API.Controllers
     [ApiController]
     public class ProfileController : BaseController
     {
-        // GET: api/<ProfileController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         // GET api/<ProfileController>/5
         [HttpGet("{id}")]

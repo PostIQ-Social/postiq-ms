@@ -20,10 +20,15 @@ namespace Home.Application.Handlers
 
         public async Task<SingleResponse<bool>> Handle(LikePostCommand request, CancellationToken cancellationToken)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
+            var post = await _context.PostsCount.FirstOrDefaultAsync(p => p.PostId == request.PostId, cancellationToken);
             if (post == null)
             {
-                return new SingleResponse<bool>(false);
+                post = new PostsCount
+                {
+                    PostId = request.PostId,
+                    LikeCount = 0,
+                    CommentCount = 0
+                };
             }
 
             var existingLike = await _context.PostLikes

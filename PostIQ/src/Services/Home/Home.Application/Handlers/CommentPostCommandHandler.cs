@@ -20,11 +20,13 @@ namespace Home.Application.Handlers
 
         public async Task<SingleResponse<bool>> Handle(CommentPostCommand request, CancellationToken cancellationToken)
         {
-            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
-            if (post == null)
+            var post = await _context.PostsCount.FirstOrDefaultAsync(p => p.PostId == request.PostId, cancellationToken);
+            post = new PostsCount
             {
-                return new SingleResponse<bool>(false);
-            }
+                PostId = request.PostId,
+                LikeCount = 0,
+                CommentCount = 0
+            };
 
             var comment = new PostComment
             {
