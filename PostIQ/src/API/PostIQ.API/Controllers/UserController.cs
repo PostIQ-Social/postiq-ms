@@ -37,10 +37,10 @@ namespace PostIQ.API.Controllers
 
             try
             {
-                var validReferralCodeCommand = new ValidateReferralQuery { code = referralCode };
+                var validReferralCodeCommand = new ValidateReferralQuery(referralCode);
                 var isReferralValid = await Mediator.Send(validReferralCodeCommand, cancellationToken);
 
-                if (!isReferralValid)
+                if (!isReferralValid.Data)
                 {
                     _logger.LogInformation("Invalid or already used referral code provided: {ReferralCode}", referralCode);
                     return BadRequest(new { Error = "Invalid or already used referral code." });

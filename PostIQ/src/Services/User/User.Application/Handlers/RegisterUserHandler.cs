@@ -103,7 +103,7 @@ namespace User.Application.Handlers
                 await _uow.CommitAsync();
                 await transaction.CommitAsync(cancellationToken);
 
-                _logger.LogInformation("Registered user {UserId} (auth {AuthId}) referred by {ReferrerId}.", newUser.UserId, authId, referrer.UserId);
+                _logger.LogInformation("Registered user {UserId} (auth {AuthId}) referred by {ReferrerId}.", newUser.UserId, request.AuthId, referrer.UserId);
 
                 return new SingleResponse<RegisterUserResponse>(
                     new RegisterUserResponse(newUser.UserId, request.AuthId, newUser.ReferralCode));

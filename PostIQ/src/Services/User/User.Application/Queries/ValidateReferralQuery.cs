@@ -1,12 +1,10 @@
 ﻿using MediatR;
+using PostIQ.Core.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace User.Application.Queries
 {
-    public record ValidateReferralQuery : IRequest<bool>
-    {
-        public string code { get; init; }
-    }
+    public record ValidateReferralQuery(string code) : IRequest<SingleResponse<bool>>;
 }
