@@ -20,7 +20,7 @@ namespace Home.Infrastructure.Extensions
             }).AddUnitOfWork<HomeDbContext>();
 
             services.AddServiceCollectionExtensions(configuration,
-                typeof(Home.Core.Entities.Post).Assembly,
+                typeof(Home.Core.Entities.PostLike).Assembly,
                 typeof(Home.Application.Handlers.GetLastJobHandler).Assembly,
                 typeof(Home.Infrastructure.Extensions.DbContextExtension).Assembly);
 

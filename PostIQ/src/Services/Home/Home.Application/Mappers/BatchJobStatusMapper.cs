@@ -12,10 +12,7 @@ namespace Home.Application.Mappers
     {
         public BatchJobStatusMapper() 
         {
-
-            CreateMap<Post, PostResponse>();
             CreateMap<UpsertBatchJobStatusCommand, BatchJobStatus>();
-            CreateMap<MergePostModel, Post>();
             CreateMap<BatchPostResponse, MergePostModel>();
             CreateMap<BatchJobStatus, LastBatchJobResponse>();       
             

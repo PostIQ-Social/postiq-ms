@@ -12,8 +12,6 @@ public class PostComment
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     public long? ParentCommentId { get; set; }
     public int LikeCount { get; set; } = 0;
-
-    public virtual Post Post { get; set; }
     public virtual PostComment ParentComment { get; set; }
     public virtual ICollection<PostComment> Replies { get; set; } = new List<PostComment>();
     public virtual ICollection<CommentLike> Likes { get; set; } = new List<CommentLike>();

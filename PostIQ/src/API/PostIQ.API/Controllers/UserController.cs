@@ -7,7 +7,9 @@ using User.Application.Queries;
 
 namespace PostIQ.API.Controllers
 {
-    public partial class UserController : BaseController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : BaseController
     {
         private readonly AuthService _auth;
         private readonly ILogger<UserController> _logger;

@@ -9,5 +9,4 @@ public class PostLike
     public long UserId { get; set; }
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-    public virtual Post Post { get; set; }
 }

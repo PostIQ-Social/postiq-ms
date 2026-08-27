@@ -77,7 +77,6 @@
     <Build Include="Security\Published.sql" />
     <Build Include="Security\User.sql" />
     <Build Include="Security\Home.sql" />
-    <Build Include="Home\Tables\Posts.sql" />
     <Build Include="Home\Tables\BatchJobStatus.sql" />
     <Build Include="Published\Tables\ProcessedPosts.sql" />
     <Build Include="Security\Auth.sql" />
@@ -89,5 +88,8 @@
     <Build Include="Home\Tables\PostLikes.sql" />
     <Build Include="Home\Tables\PostComments.sql" />
     <Build Include="Home\Tables\CommentLikes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Database.publish.xml" />
   </ItemGroup>
 </Project>

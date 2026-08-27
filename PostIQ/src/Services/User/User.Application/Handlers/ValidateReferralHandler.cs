@@ -22,8 +22,16 @@ namespace User.Application.Handlers
         }
         public async Task<SingleResponse<bool>> Handle(ValidateReferralQuery request, CancellationToken cancellationToken)
         {
-            var referrer = await _userRepo.SingleOrDefaultAsync(x => x.ReferralCode.ToLower() == request.code.ToLower() && x.IsActive);
-            return new SingleResponse<bool>(referrer != null);
+            try
+            {
+                var referrer = await _userRepo.SingleOrDefaultAsync(x => x.ReferralCode.ToLower() == request.code.ToLower() && x.IsActive);
+                return new SingleResponse<bool>(referrer != null);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }            
         }
     }
 }
