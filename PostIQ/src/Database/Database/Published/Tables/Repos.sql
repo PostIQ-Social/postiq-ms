@@ -3,7 +3,7 @@
     [JobId]       BIGINT        NOT NULL,
     [PublishedId] BIGINT        NOT NULL,
     [Source]      VARCHAR (50)  NOT NULL,
-    [RepoUrl]     VARCHAR (100) NOT NULL,
+    [RepoUrl]     VARCHAR (200) NOT NULL,
     [Status]      INT           NOT NULL,
     [IsActive]    BIT NOT NULL,
     [PostedOn]    DATETIME      NOT NULL,
