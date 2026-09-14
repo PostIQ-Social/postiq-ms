@@ -43,7 +43,11 @@ namespace Published.Infrastructure.Jobs.RepoJobs
                 // Fetch repositories/blogs from the source
                 var repositories = await provider.FetchRepositoriesAsync(item.BaseUrl, cancellationToken);
 
-                await SaveRepositoryAsync(item, repositories, cancellationToken);
+                // Process each repository and add to database
+                foreach (var repoInfo in repositories)
+                {
+                    await SaveRepositoryAsync(item, repoInfo, cancellationToken);
+                }
 
                 // Update job execution times
                 await UpdateJobExecutionTimesAsync(item, cancellationToken);
@@ -57,40 +61,34 @@ namespace Published.Infrastructure.Jobs.RepoJobs
             await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken);
         }
 
-        private async Task SaveRepositoryAsync(Job job, List<RepositoryInfo> repoInfo, CancellationToken cancellationToken)
+        private async Task SaveRepositoryAsync(Job job, RepositoryInfo repoInfo, CancellationToken cancellationToken)
         {
             try
             {
-                List<Repo> newRepos = new List<Repo>();
                 // Check if repository already exists
-                var existingRepos = await _repoAsync.GetListAsync(r => r.JobId == job.JobId && repoInfo.Select(x => x.Url).Contains(r.RepoUrl));
-                foreach (var repo in repoInfo)
-                {        
-                    if (existingRepos.Data.Any(r => r.RepoUrl == repo.Url))
-                    {
-                        continue; // Skip if already exists
-                    }
+                var existingRepo = await _repoAsync.SingleOrDefaultAsync(r => r.JobId == job.JobId && r.RepoUrl == repoInfo.Url);
 
-                    // Create new Repo entity
-                    newRepos.Add(new Repo
-                    {
-                        JobId = job.JobId,
-                        PublishedId = job.PublishedId,
-                        Source = job.Source,
-                        RepoUrl = repo.Url,
-                        Status = Convert.ToInt16(StatusEnum.Pending),
-                        IsActive = true,
-                        PostedOn = repo.PublishedDate ?? DateTime.UtcNow,
-                        CreatedOn = DateTime.UtcNow,
-                        CreatedBy = job.CreatedBy,
-                        MetaData = repoInfo != null ? System.Text.Json.JsonSerializer.Serialize(repoInfo) : string.Empty
-                    });
-                }
-                if(newRepos.Count == 0)
+                if (existingRepo != null)
                 {
-                    return; // No new repositories to add
+                    return; // Skip if already exists
                 }
-                await _repoAsync.InsertAsync(newRepos, cancellationToken);
+
+                // Create new Repo entity
+                var repo = new Repo
+                {
+                    JobId = job.JobId,
+                    PublishedId = job.PublishedId,
+                    Source = job.Source,
+                    RepoUrl = repoInfo.Url,
+                    Status = Convert.ToInt16(StatusEnum.Pending),
+                    IsActive = true,
+                    PostedOn = repoInfo.PublishedDate ?? DateTime.UtcNow,
+                    CreatedOn = DateTime.UtcNow,
+                    CreatedBy = job.CreatedBy,
+                    MetaData = repoInfo != null ? System.Text.Json.JsonSerializer.Serialize(repoInfo) : string.Empty
+                };
+
+                await _repoAsync.InsertAsync(repo, cancellationToken);
                 await _uow.CommitAsync();
             }
             catch (Exception ex)
