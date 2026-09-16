@@ -32,6 +32,10 @@ public class GeminiLlmClient : ILlmClient
         {
             throw new ArgumentException("Prompt cannot be null or empty", nameof(prompt));
         }
+        if (string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_model))
+        {
+            return string.Empty;
+        }
 
         var request = new GeminiRequest
         {
@@ -52,6 +56,11 @@ public class GeminiLlmClient : ILlmClient
         try
         {
             var response = await _httpClient.PostAsync(url, content, cancellationToken);
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return string.Empty;
+            }
+
             response.EnsureSuccessStatusCode();
 
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);

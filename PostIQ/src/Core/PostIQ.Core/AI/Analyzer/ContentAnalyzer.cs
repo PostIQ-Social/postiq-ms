@@ -1,6 +1,8 @@
 ﻿using PostIQ.Core.AI.Attribute;
 using PostIQ.Core.AI.Helper;
 using PostIQ.Core.AI.LLM;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PostIQ.Core.AI.Analyzer
 {
@@ -20,8 +22,11 @@ namespace PostIQ.Core.AI.Analyzer
         public async Task<TOutput> AnalyzeAsync(TInput input, CancellationToken cancellationToken = default)
         {
             var prompt = GetPrompt(input);
-            var response = await _llmClient.GetCompletionAsync(prompt, cancellationToken);
-
+            var response = await _llmClient.GetCompletionAsync(prompt, cancellationToken);            
+            if (response == null || response == string.Empty)
+            {
+                response = JsonSerializer.Serialize(input);
+            }
             var llmProperties = typeof(TOutput)
                 .GetProperties()
                 .Where(p => System.Attribute.IsDefined(p, typeof(LlmResponseAttribute)))
