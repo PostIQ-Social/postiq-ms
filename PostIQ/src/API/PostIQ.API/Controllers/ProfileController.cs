@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PostIQ.API.Contracts;
 using PostIQ.Core.Application.Controllers;
+using Published.Application.Commands;
+using Published.Application.Queries;
+using User.Application.Contracts;
 using User.Application.Queries;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,19 +17,83 @@ namespace User.API.Controllers
     {
 
         // GET api/<ProfileController>/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(long id)
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> Get()
         {
-            GetUIserByIdQuery query = new GetUIserByIdQuery(id);
-            var result = await Mediator.Send(query);
+            var identity = await Identity;
+            if(identity == null)
+            {
+                return Unauthorized();
+            }
+            GetUserDetailsByGuidQuery query = new GetUserDetailsByGuidQuery(identity.AuthId);
+            var user = await Mediator.Send(query);
+            if (user.Data is null)
+            {
+                return NotFound();
+            }
+
+            var postsQuery = new GetJobsByUserIdQuery(identity.UserId);
+            var posts = await Mediator.Send(postsQuery);
+            var response = new ProfileResponse
+            {
+                UserId = identity.UserId,
+                FirstName = user.Data.FirstName,
+                LastName = user.Data.LastName,
+                ReferralCode = user.Data.ReferralCode,
+                Email = identity.Email ?? string.Empty,
+                Posts = posts
+            };
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Post(AddPostRequest request)
+        {
+            var identity = await Identity;
+            if (identity == null)
+            {
+                return Unauthorized();
+            }
+            var command = new AddJobCommand
+            {
+                BaseUrl = request.BaseUrl,
+                PublishedId = 0,
+                UserId = identity.UserId,
+                Source = request.Source
+            };
+            var result = await Mediator.Send(command);
             return Ok(result);
         }
 
-        [HttpGet("{userId}/posts")]
-        public async Task<IActionResult> GetPosts(long userId)
+        [HttpGet("my-posts")]
+        [Authorize]
+        public async Task<IActionResult> GetPosts(int pageno, int pagesize)
         {
-            var query = new GetUserPostsQuery(userId);
-            var result = await Mediator.Send(query);
+            var identity = await Identity;
+            if(identity == null)
+            {
+                return Unauthorized();
+            }
+            var result = await Mediator.Send(new GetPostByUserIdQuery
+            {
+                UserId = identity.UserId,
+                PageNo = pageno,
+                PageSize = pagesize
+            });
+
+            if (result.Data is { Count: > 0 })
+            {
+                var postIds = result.Data.Select(post => post.Id).ToArray();
+                var likedPostIds = await Mediator.Send(new GetLikedPostIdsQuery(identity.UserId, postIds));
+                var likedPostIdSet = likedPostIds.ToHashSet();
+                foreach (var post in result.Data)
+                {
+                    post.IsLiked = likedPostIdSet.Contains(post.Id);
+                }
+            }
+
             return Ok(result);
         }
     }

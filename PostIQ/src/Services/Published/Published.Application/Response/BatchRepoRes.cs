@@ -28,6 +28,7 @@ namespace Published.Application.Response
         public DateTime PostedOn { get; set; }
         public int LikeCount { get; set; }
         public int CommentCount { get; set; }
+        public bool IsLiked { get; set; }
 
 
     }

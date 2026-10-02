@@ -13,7 +13,7 @@ namespace User.Infrastructure.Extensions
         {
             services.AddServiceCollectionExtensions(configuration,
                 typeof(User.Core.Entities.UserDetail).Assembly,
-                typeof(User.Application.Handlers.GetUserByIdHandler).Assembly,
+                typeof(User.Application.Handlers.GetUserDetailsByGuidHandler).Assembly,
                 typeof(User.Infrastructure.Repositories.UserRepository).Assembly
             );
             services.AddDbContext<UserDBContext>(options =>

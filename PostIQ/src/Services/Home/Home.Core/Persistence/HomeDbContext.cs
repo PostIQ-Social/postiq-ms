@@ -17,13 +17,9 @@ public partial class HomeDbContext : DbContext
     }
 
     public virtual DbSet<BatchJobStatus> BatchJobStatuses { get; set; }
-
     public virtual DbSet<PostsCount> PostsCount { get; set; }
-
     public virtual DbSet<PostLike> PostLikes { get; set; }
-
     public virtual DbSet<PostComment> PostComments { get; set; }
-
     public virtual DbSet<CommentLike> CommentLikes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,19 +30,14 @@ public partial class HomeDbContext : DbContext
             entity.HasKey(e => e.CountId);
         });
 
-
         modelBuilder.Entity<BatchJobStatus>(entity =>
         {
             entity.HasKey(e => e.StatusId).HasName("PK_SyncJob");
-
             entity.ToTable("BatchJobStatus", "Home");
-
             entity.Property(e => e.Status)
                 .HasMaxLength(10)
                 .IsUnicode(false);
         });
-
-        
 
         modelBuilder.Entity<PostLike>(entity =>
         {
@@ -60,8 +51,6 @@ public partial class HomeDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
 
-
-            // Self-referencing relationship for replies
             entity.HasOne(d => d.ParentComment)
                 .WithMany(p => p.Replies)
                 .HasForeignKey(d => d.ParentCommentId)

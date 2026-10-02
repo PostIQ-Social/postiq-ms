@@ -10,6 +10,9 @@ public partial class ProcessedPost
     [Key]
     public long ProcessedPostId { get; set; }
 
+    [InverseProperty(nameof(PostsCount.Post))]
+    public virtual PostsCount? PostsCount { get; set; }
+
     public long RepoId { get; set; }
 
     [StringLength(500)]

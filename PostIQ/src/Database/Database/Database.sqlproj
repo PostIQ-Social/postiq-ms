@@ -69,6 +69,9 @@
     <Folder Include="Auth\Tables" />
   </ItemGroup>
   <ItemGroup>
+    <PostDeploy Include="PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <Build Include="User\Tables\Published.sql" />
     <Build Include="User\Tables\UserDetails.sql" />
     <Build Include="Published\Tables\Job.sql" />
@@ -88,8 +91,9 @@
     <Build Include="Home\Tables\PostLikes.sql" />
     <Build Include="Home\Tables\PostComments.sql" />
     <Build Include="Home\Tables\CommentLikes.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Database.publish.xml" />
+    <Build Include="Published\Tables\PostCounts.sql" />
+    <Build Include="Published\Tables\CommentLikes.sql" />
+    <Build Include="Published\Tables\PostComments.sql" />
+    <Build Include="Published\Tables\PostLikes.sql" />
   </ItemGroup>
 </Project>

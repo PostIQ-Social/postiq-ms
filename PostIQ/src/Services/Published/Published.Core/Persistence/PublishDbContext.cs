@@ -23,6 +23,10 @@ public partial class PublishDbContext : DbContext
     public virtual DbSet<RepoDetail> RepoDetails { get; set; }
 
     public virtual DbSet<ProcessedPost> ProcessedPosts { get; set; }
+    public virtual DbSet<PostsCount> PostsCount { get; set; }
+    public virtual DbSet<PostLike> PostLikes { get; set; }
+    public virtual DbSet<PostComment> PostComments { get; set; }
+    public virtual DbSet<CommentLike> CommentLikes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,6 +64,51 @@ public partial class PublishDbContext : DbContext
             entity.HasOne(d => d.Repo).WithMany(p => p.ProcessedPosts)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProcessedPosts_Repos");
+        });
+
+        modelBuilder.Entity<PostsCount>(entity =>
+        {
+            entity.ToTable("PostsCount", "Published");
+            entity.HasKey(e => e.CountId).HasName("PK_Published.PostsCount");
+            entity.HasIndex(e => e.PostId).IsUnique()
+                .HasDatabaseName("IX_Published.PostsCount_PostId");
+
+            entity.HasOne(d => d.Post)
+                .WithOne(p => p.PostsCount)
+                .HasForeignKey<PostsCount>(d => d.PostId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_PostsCount_ProcessedPosts");
+        });
+
+        modelBuilder.Entity<PostLike>(entity =>
+        {
+            entity.ToTable("PostLikes", "Published");
+            entity.HasKey(e => e.Id).HasName("PK_PostLikes");
+            entity.HasIndex(e => new { e.PostId, e.UserId }).IsUnique()
+                .HasDatabaseName("UX_PostLikes_PostId_UserId");
+        });
+
+        modelBuilder.Entity<PostComment>(entity =>
+        {
+            entity.ToTable("PostComments", "Published");
+            entity.HasKey(e => e.Id).HasName("PK_PostComments");
+            entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
+
+            entity.HasOne(d => d.ParentComment)
+                .WithMany(p => p.Replies)
+                .HasForeignKey(d => d.ParentCommentId)
+                .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<CommentLike>(entity =>
+        {
+            entity.ToTable("CommentLikes", "Published");
+            entity.HasKey(e => e.Id).HasName("PK_CommentLikes");
+
+            entity.HasOne(d => d.Comment)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(d => d.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

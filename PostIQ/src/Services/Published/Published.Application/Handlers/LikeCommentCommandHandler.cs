@@ -1,26 +1,26 @@
-using Home.Application.Commands;
-using Home.Core.Entities;
-using Home.Core.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PostIQ.Core.Response;
-using System.Threading;
-using System.Threading.Tasks;
+using Published.Application.Commands;
+using Published.Core.Entities;
+using Published.Core.Persistence;
 
-namespace Home.Application.Handlers
+namespace Published.Application.Handlers
 {
     public class LikeCommentCommandHandler : IRequestHandler<LikeCommentCommand, SingleResponse<bool>>
     {
-        private readonly HomeDbContext _context;
+        private readonly PublishDbContext _context;
 
-        public LikeCommentCommandHandler(HomeDbContext context)
+        public LikeCommentCommandHandler(PublishDbContext context)
         {
             _context = context;
         }
 
         public async Task<SingleResponse<bool>> Handle(LikeCommentCommand request, CancellationToken cancellationToken)
         {
-            var comment = await _context.PostComments.FirstOrDefaultAsync(c => c.Id == request.CommentId, cancellationToken);
+            var comment = await _context.PostComments
+                .FirstOrDefaultAsync(c => c.Id == request.CommentId, cancellationToken);
+
             if (comment == null)
             {
                 return new SingleResponse<bool>(false);
@@ -31,18 +31,15 @@ namespace Home.Application.Handlers
 
             if (existingLike == null)
             {
-                // Add like
-                var like = new CommentLike
+                _context.CommentLikes.Add(new CommentLike
                 {
                     CommentId = request.CommentId,
                     UserId = request.UserId
-                };
-                _context.CommentLikes.Add(like);
+                });
                 comment.LikeCount++;
             }
             else
             {
-                // Remove like (toggle)
                 _context.CommentLikes.Remove(existingLike);
                 if (comment.LikeCount > 0)
                 {
@@ -51,7 +48,6 @@ namespace Home.Application.Handlers
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-
             return new SingleResponse<bool>(true);
         }
     }

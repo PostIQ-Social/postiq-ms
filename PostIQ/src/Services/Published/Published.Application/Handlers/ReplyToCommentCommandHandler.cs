@@ -1,19 +1,17 @@
-using Home.Application.Commands;
-using Home.Core.Entities;
-using Home.Core.Persistence;
 using MediatR;
+using Published.Application.Commands;
+using Published.Core.Persistence;
+using Published.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using PostIQ.Core.Response;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Home.Application.Handlers
+namespace Published.Application.Handlers
 {
     public class ReplyToCommentCommandHandler : IRequestHandler<ReplyToCommentCommand, SingleResponse<bool>>
     {
-        private readonly HomeDbContext _context;
+        private readonly PublishDbContext _context;
 
-        public ReplyToCommentCommandHandler(HomeDbContext context)
+        public ReplyToCommentCommandHandler(PublishDbContext context)
         {
             _context = context;
         }
@@ -29,6 +27,7 @@ namespace Home.Application.Handlers
                     LikeCount = 0,
                     CommentCount = 0
                 };
+                _context.PostsCount.Add(post);
             }
 
             var parentComment = await _context.PostComments
@@ -47,6 +46,7 @@ namespace Home.Application.Handlers
             };
 
             _context.PostComments.Add(reply);
+            post.CommentCount++;
 
             await _context.SaveChangesAsync(cancellationToken);
 

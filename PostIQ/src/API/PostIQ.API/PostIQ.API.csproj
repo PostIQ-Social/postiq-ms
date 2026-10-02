@@ -13,4 +13,8 @@
     <ProjectReference Include="..\..\Services\User\User.Infrastructure\User.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Templates\ResetPasswordEmail.html" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

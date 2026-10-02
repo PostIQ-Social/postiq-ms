@@ -10,7 +10,8 @@ namespace User.Application.Mappers
         {
             CreateMap<UserDetail, UserResponse>().ConstructUsing(src => new UserResponse(src.UserId, 
                                                                         src.FirstName, 
-                                                                        src.LastName));
+                                                                        src.LastName,
+                                                                        src.ReferralCode));
         }
 
     }

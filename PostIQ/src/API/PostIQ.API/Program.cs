@@ -1,4 +1,5 @@
 using PostIQ.API.Middleware;
+using PostIQ.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ var services = builder.Services;
     services.AddAuthorization();
     services.AddControllers();
     services.AddEndpointsApiExplorer();
+    services.AddHttpContextAccessor();
+    services.AddScoped<ITokenClaimsService, TokenClaimsService>();
+    services.AddScoped<IIdentityService, User.Infrastructure.Services.IdentityService>();
 
     services.AddCors(options =>
     {

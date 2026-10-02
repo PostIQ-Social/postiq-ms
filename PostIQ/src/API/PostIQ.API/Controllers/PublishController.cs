@@ -13,6 +13,7 @@ namespace User.API.Controllers
 
         [HttpPost]
         [Route("add-or-update")]
+        [NonAction]
         public async Task<IActionResult> AddOrUpdatePublished([FromBody] AddUpdatePublishedCommand command)
         {
             var publish = await Mediator.Send(command);

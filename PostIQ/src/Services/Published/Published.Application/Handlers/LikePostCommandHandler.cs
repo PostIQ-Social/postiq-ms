@@ -1,19 +1,17 @@
-using Home.Application.Commands;
-using Home.Core.Entities;
-using Home.Core.Persistence;
 using MediatR;
+using Published.Application.Commands;
+using Published.Core.Persistence;
+using Published.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using PostIQ.Core.Response;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Home.Application.Handlers
+namespace Published.Application.Handlers
 {
     public class LikePostCommandHandler : IRequestHandler<LikePostCommand, SingleResponse<bool>>
     {
-        private readonly HomeDbContext _context;
+        private readonly PublishDbContext _context;
 
-        public LikePostCommandHandler(HomeDbContext context)
+        public LikePostCommandHandler(PublishDbContext context)
         {
             _context = context;
         }
@@ -29,6 +27,7 @@ namespace Home.Application.Handlers
                     LikeCount = 0,
                     CommentCount = 0
                 };
+                _context.PostsCount.Add(post);
             }
 
             var existingLike = await _context.PostLikes
@@ -36,7 +35,6 @@ namespace Home.Application.Handlers
 
             if (existingLike == null)
             {
-                // Add like
                 var like = new PostLike
                 {
                     PostId = request.PostId,
@@ -47,7 +45,6 @@ namespace Home.Application.Handlers
             }
             else
             {
-                // Remove like (toggle)
                 _context.PostLikes.Remove(existingLike);
                 if (post.LikeCount > 0)
                 {

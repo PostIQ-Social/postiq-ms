@@ -19,6 +19,10 @@ public partial class UserDetail
 
     public string? Phone { get; set; }
 
+    public string? VerificationCode { get; set; }
+
+    public DateTime? VerificationCodeExpireAt { get; set; }
+
     public string ReferralCode { get; set; } = null!;
 
     public bool IsActive { get; set; }

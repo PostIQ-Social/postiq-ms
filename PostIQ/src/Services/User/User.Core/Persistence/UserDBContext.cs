@@ -62,6 +62,10 @@ public partial class UserDBContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.VerificationCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.VerificationCodeExpireAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedOn).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy);
             entity.Property(e => e.UpdatedBy);
