@@ -43,7 +43,8 @@ namespace Home.API.Controllers
         [HttpGet("{postId}/comments")]
         public async Task<IActionResult> GetComments(long postId)
         {
-            var query = new Published.Application.Queries.GetCommentsQuery(postId);
+            var identity = User.Identity?.IsAuthenticated == true ? await Identity : null;
+            var query = new Published.Application.Queries.GetCommentsQuery(postId, identity?.UserId);
             var result = await Mediator.Send(query);
             if (result.Data is { Count: > 0 })
             {

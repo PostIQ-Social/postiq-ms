@@ -4,5 +4,5 @@ using Published.Application.Response;
 
 namespace Published.Application.Queries
 {
-    public record GetCommentsQuery(long PostId) : IRequest<ListResponse<CommentResponse>>;
+    public record GetCommentsQuery(long PostId, long? UserId = null) : IRequest<ListResponse<CommentResponse>>;
 }

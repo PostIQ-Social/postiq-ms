@@ -9,7 +9,7 @@ DECLARE @InsertedUser TABLE (UserId BIGINT);
 
 SELECT @AdminAuthId = [Id]
 FROM [Auth].[User]
-WHERE [Email] = N'admin@postiq.com';
+WHERE [Email] = N'admin@footprint.com';
 
 IF @AdminAuthId IS NULL
 BEGIN
@@ -23,8 +23,8 @@ BEGIN
     VALUES
     (
         @AdminAuthId,
-        N'admin@postiq.com',
-        N'Admin user',
+        N'admin@footprint.com',
+        N'Footprint Admin',
         N'AQ2KJmZ+z39dUnT6qjykv3MKHHesT+cIoNKfxoaQOU0RE8uI8eZ7Xj18vHGMJNthQw==',
         1, 0, 0, 0, N'User,Admin', SYSUTCDATETIME()
     );
@@ -32,7 +32,7 @@ END
 ELSE
 BEGIN
     UPDATE [Auth].[User]
-    SET [UserName] = N'Admin user',
+    SET [UserName] = N'Footprint Admin',
         [Roles] = CASE
             WHEN N',' + REPLACE(ISNULL([Roles], N''), N' ', N'') + N',' LIKE N'%,Admin,%' THEN [Roles]
             WHEN NULLIF(LTRIM(RTRIM([Roles])), N'') IS NULL THEN N'User,Admin'
@@ -53,7 +53,7 @@ BEGIN
     OUTPUT inserted.[UserId] INTO @InsertedUser ([UserId])
     VALUES
     (
-        @AdminAuthId, 'Admin', 'user', '123456', 1, GETUTCDATE(), 0
+        @AdminAuthId, 'Footprint', 'Admin', '123456', 1, GETUTCDATE(), 0
     );
 
     SELECT @AdminUserId = [UserId] FROM @InsertedUser;

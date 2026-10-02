@@ -67,9 +67,10 @@
     <Folder Include="Home\Tables" />
     <Folder Include="Auth" />
     <Folder Include="Auth\Tables" />
+    <Folder Include="Post-Deployment" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="PostDeployment.sql" />
+    <PostDeploy Include="Post-Deployment\PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="User\Tables\Published.sql" />
