@@ -64,6 +64,12 @@ namespace User.API.Controllers
                 Source = request.Source
             };
             var result = await Mediator.Send(command);
+            if (!result.IsValid)
+            {
+                var message = string.Join(" ", result.Errors.SelectMany(error => error.Value));
+                return Conflict(new { message });
+            }
+
             return Ok(result);
         }
 
