@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PostIQ.API.Contracts;
 using PostIQ.Core.Application.Controllers;
+using PostIQ.Core.BackgroundProcess.Interfaces;
 using Published.Application.Commands;
 using Published.Application.Queries;
 using User.Application.Contracts;
@@ -15,6 +16,11 @@ namespace User.API.Controllers
     [ApiController]
     public class ProfileController : BaseController
     {
+        private readonly IBackgroundJobTrigger _backgroundJobTrigger;
+        public ProfileController(IBackgroundJobTrigger backgroundJobTrigger)
+        {
+            _backgroundJobTrigger = backgroundJobTrigger;
+        }
 
         // GET api/<ProfileController>/5
         [HttpGet("me")]
@@ -101,6 +107,27 @@ namespace User.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var identity = await Identity;
+            if (identity == null)
+            {
+                return Unauthorized();
+            }
+            GetUserDetailsByGuidQuery query = new GetUserDetailsByGuidQuery(identity.AuthId);
+            var user = await Mediator.Send(query);
+            if (user.Data is null)
+            {
+                return NotFound();
+            }
+
+            var job = await Mediator.Send(new GetJobForTriggerQuery(identity.UserId));
+            await _backgroundJobTrigger.TriggerJobItemAsync("RepoJob", job.Data[0]);
+
+            return Ok();
         }
     }
 }

@@ -21,7 +21,7 @@ public sealed class GetJobsByUserIdHandler : IRequestHandler<GetJobsByUserIdQuer
         var jobs = await _context.Jobs
             .AsNoTracking()
             .Where(job => job.UserId == request.UserId)
-            .Select(job => new UserJobResponse(job.Source, job.BaseUrl))
+            .Select(job => new UserJobResponse(job.Source, job.BaseUrl, job.JobId))
             .ToListAsync(cancellationToken);
 
         return new ListResponse<UserJobResponse> { Data = jobs };
