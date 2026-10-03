@@ -111,7 +111,6 @@ namespace User.API.Controllers
 
         [HttpGet("refresh")]
         [Authorize]
-        [NonAction]
         public async Task<IActionResult> Refresh()
         {
             var identity = await Identity;
@@ -127,7 +126,18 @@ namespace User.API.Controllers
             }
 
             var job = await Mediator.Send(new GetJobForTriggerQuery(identity.UserId));
-            await _backgroundJobTrigger.TriggerJobItemAsync("RepoJob", job.Data[0]);
+            var jobResult = await _backgroundJobTrigger.TriggerJobItemAsync("RepoJob", job.Data[0]);
+            if(jobResult)
+            {
+                var repos = await Mediator.Send(new GetReposByJobIdQuery(job.Data[0].JobId));
+                if (repos.Data is { Count: > 0 })
+                {
+                    foreach (var repo in repos.Data)
+                    {
+                        await _backgroundJobTrigger.TriggerJobItemAsync("RepoDetailsJob", repo);
+                    }
+                }
+            }
 
             return Ok();
         }
