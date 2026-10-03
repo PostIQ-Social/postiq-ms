@@ -2,6 +2,7 @@ using Home.Application.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostIQ.Core.Application.Controllers;
+using PostIQ.Identity.Services;
 using Published.Application.Commands;
 using Published.Application.Queries;
 using Published.Application.Response;
@@ -13,6 +14,13 @@ namespace Home.API.Controllers
     [ApiController]
     public class HomeController : BaseController
     {
+        private readonly AuthService _authService;
+
+        public HomeController(AuthService authService)
+        {
+            _authService = authService;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get(int pageNo, int pageSize)
         {
@@ -35,6 +43,49 @@ namespace Home.API.Controllers
             }
 
             var result = await Mediator.Send(new SearchPostsQuery(query, searchBy, pageNo, pageSize));
+            await AddPostCountsAsync(result.Data);
+            await AddLikedStateAsync(result.Data);
+            return Ok(result);
+        }
+
+        [HttpGet("GetPostsByEmail")]
+        public async Task<IActionResult> GetPostsByEmail(
+            [FromQuery] string email,
+            [FromQuery] int pageNo = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest(new { message = "An email address is required." });
+            }
+
+            if (pageNo < 1 || pageSize < 1 || pageSize > 100)
+            {
+                return BadRequest(new { message = "Page number must be positive and page size must be between 1 and 100." });
+            }
+
+            var authUser = await _authService.GetGuidByEmailAsync(email, cancellationToken);
+            if (!authUser.Ok)
+            {
+                return authUser.Status == StatusCodes.Status404NotFound
+                    ? NotFound()
+                    : BadRequest(new { message = authUser.Error });
+            }
+
+            var user = await Mediator.Send(new GetUserDetailsByGuidQuery(authUser.Value), cancellationToken);
+            if (user.Data is null)
+            {
+                return NotFound();
+            }
+
+            var result = await Mediator.Send(new GetPostByUserIdQuery
+            {
+                UserId = user.Data.UserId,
+                PageNo = pageNo,
+                PageSize = pageSize
+            }, cancellationToken);
+
             await AddPostCountsAsync(result.Data);
             await AddLikedStateAsync(result.Data);
             return Ok(result);

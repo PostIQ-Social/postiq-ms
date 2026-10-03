@@ -420,6 +420,19 @@ namespace PostIQ.Identity.Services
             return Result<object>.Success(new { phoneConfirmed = true });
         }
 
+        public async Task<Result<Guid>> GetGuidByEmailAsync(string email, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return Result<Guid>.Failure(400, "Email is required.");
+
+            var normalized = email.Trim().ToLowerInvariant();
+            var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == normalized, ct);
+            if (user is null)
+                return Result<Guid>.Failure(404, "User not found.");
+
+            return Result<Guid>.Success(user.Id);
+        }
+
         private async Task CreateEmailConfirmationTokenAsync(Guid userId, CancellationToken ct)
         {
             var opaque = CryptoUtil.GenerateOpaqueToken();
