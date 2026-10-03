@@ -43,10 +43,15 @@ namespace Published.Application.Handlers
             }
 
             var entity = _mapper.Map<Job>(request);
-            entity.Source = source;
+
             entity.CreatedBy = request.UserId;
             entity.CreatedOn = DateTime.UtcNow;
             entity.IsActive = true;
+            entity.PublishedId = request.PublishedId;
+            entity.BaseUrl = request.BaseUrl;
+            entity.Source = source;
+            entity.UserId = request.UserId;
+            entity.NextExecutionTime = DateTime.UtcNow; // Trigger immediate processing
 
             await _job.InsertAsync(entity, cancellationToken);
             await _uow.CommitAsync();
