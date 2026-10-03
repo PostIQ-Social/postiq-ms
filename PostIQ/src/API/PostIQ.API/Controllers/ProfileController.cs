@@ -110,6 +110,8 @@ namespace User.API.Controllers
         }
 
         [HttpGet("refresh")]
+        [Authorize]
+        [NonAction]
         public async Task<IActionResult> Refresh()
         {
             var identity = await Identity;

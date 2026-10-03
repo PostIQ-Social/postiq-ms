@@ -1,12 +1,22 @@
+using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using PostIQ.Core.HttpClientService.Models;
+using PostIQ.Core.HttpClientService.Services;
+
 namespace Published.Infrastructure.Providers;
 
 public class MediumRepositoryProvider : IRepositoryProvider
 {
-    private readonly HttpClient _httpClient;
+    private readonly IBaseHttpClientService _httpClientService;
 
-    public MediumRepositoryProvider(HttpClient httpClient)
+    public MediumRepositoryProvider(IBaseHttpClientService httpClientService)
     {
-        _httpClient = httpClient;
+        _httpClientService = httpClientService;
     }
 
     public async Task<List<RepositoryInfo>> FetchRepositoriesAsync(string url, CancellationToken cancellationToken = default)
@@ -21,31 +31,40 @@ public class MediumRepositoryProvider : IRepositoryProvider
             // Convert Medium profile URL to RSS feed URL
             var feedUrl = ConvertToMediumRssFeedUrl(url);
 
-            // Fetch the RSS feed
-            var response = await _httpClient.GetAsync(feedUrl, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            // Use BaseHttpClientService to get a stream for the RSS feed to avoid buffering large responses.
+            // Use empty client name to use the default IHttpClientFactory client; change if a named client is desired.
+            HttpResponseResult result = await _httpClientService.GetStreamAsync(string.Empty, feedUrl, options: null, cancellationToken);
 
-            var feedContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (!result.IsSuccessStatusCode || result.ResponseStream is null)
+            {
+                throw new InvalidOperationException($"Failed to fetch RSS feed from Medium URL: {url}. StatusCode={result.StatusCode} Reason={result.ReasonPhrase}");
+            }
 
-            // Parse RSS feed and extract repository information
-            var repositories = RssFeedParser.ParseRssFeed(feedContent, url);
+            using (result)
+            {
+                using var reader = new StreamReader(result.ResponseStream, Encoding.UTF8);
+                var feedContent = await reader.ReadToEndAsync();
 
-            return repositories;
+                // Parse RSS feed and extract repository information
+                var repositories = RssFeedParser.ParseRssFeed(feedContent, url);
+
+                return repositories;
+            }
         }
         catch (ArgumentException)
         {
             throw;
         }
-        catch (HttpRequestException httpEx)
+        catch (Exception ex) when (ex is HttpRequestException || ex is InvalidOperationException)
         {
             throw new InvalidOperationException(
-                $"Failed to fetch RSS feed from Medium URL: {url}. The profile might not exist or RSS feed is not accessible.", 
-                httpEx);
+                $"Failed to fetch RSS feed from Medium URL: {url}. The profile might not exist or RSS feed is not accessible.",
+                ex);
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Failed to process Medium RSS feed for URL: {url}", 
+                $"Failed to process Medium RSS feed for URL: {url}",
                 ex);
         }
     }
