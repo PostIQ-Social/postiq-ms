@@ -57,7 +57,7 @@ namespace PostIQ.Identity.Contracts
         public string Email { get; set; } = "";
         [Required]
         public string Token { get; set; } = "";
-        [Required, MinLength(8), MaxLength(200)]
+        [Required, MinLength(6), MaxLength(200)]
         public string NewPassword { get; set; } = "";
     }
     public class ConfirmEmailRequest

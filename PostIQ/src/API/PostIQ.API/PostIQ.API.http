@@ -4,3 +4,9 @@ GET {{PostIQ.API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+### Open the password reset page (a reset token and email are normally supplied in the query string)
+GET {{PostIQ.API_HostAddress}}/reset-password?token=replace-with-reset-token&email=user%40example.com
+Accept: text/html
+
+###

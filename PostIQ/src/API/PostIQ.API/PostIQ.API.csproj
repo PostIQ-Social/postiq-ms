@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Update="Templates\ResetPasswordEmail.html" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="wwwroot\reset-password.html" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

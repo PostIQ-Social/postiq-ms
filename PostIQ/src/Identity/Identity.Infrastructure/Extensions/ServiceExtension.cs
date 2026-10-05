@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
+using PostIQ.Core.Shared.Email;
 using PostIQ.Identity.Data;
 using PostIQ.Identity.Options;
 using PostIQ.Identity.Services;
@@ -20,6 +21,8 @@ namespace Identity.Infrastructure.Extensions
 
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
             services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.SectionName));
+            services.Configure<PasswordResetOptions>(configuration.GetSection(PasswordResetOptions.SectionName));
+            services.Configure<EmailSenderOptions>(configuration.GetSection(EmailSenderOptions.SectionName));
 
             var jwtSection = configuration.GetSection(JwtOptions.SectionName);
             var signingKey = jwtSection.Get<JwtOptions>()?.SigningKey
@@ -31,6 +34,7 @@ namespace Identity.Infrastructure.Extensions
             services.AddSingleton<PasswordHasherService>();
             services.AddSingleton<TotpService>();
             services.AddSingleton<JwtTokenService>();
+            services.AddTransient<IEmailSender, SmtpEmailSender>();
             services.AddScoped<AuthService>();
 
 

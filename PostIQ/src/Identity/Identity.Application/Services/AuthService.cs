@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PostIQ.Core.Shared.Email;
 using PostIQ.Identity.Contracts;
 using PostIQ.Identity.Data;
 using PostIQ.Identity.Models;
@@ -20,6 +21,8 @@ namespace PostIQ.Identity.Services
         private readonly IOptions<AuthOptions> authOptions;
         private readonly ILogger<AuthService> logger;
         private readonly IWebHostEnvironment env;
+        private readonly IEmailSender emailSender;
+        private readonly IOptions<PasswordResetOptions> passwordResetOptions;
 
         private readonly JwtOptions _jwtOpt;
         private readonly AuthOptions _authOpt;
@@ -32,7 +35,9 @@ namespace PostIQ.Identity.Services
             IOptions<JwtOptions> jwtOptions,
             IOptions<AuthOptions> authOptions,
             ILogger<AuthService> logger,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            IEmailSender emailSender,
+            IOptions<PasswordResetOptions> passwordResetOptions)
         {
             this.db = db;
             this.passwordHasher = passwordHasher;
@@ -42,6 +47,8 @@ namespace PostIQ.Identity.Services
             this.authOptions = authOptions;
             this.logger = logger;
             this.env = env;
+            this.emailSender = emailSender;
+            this.passwordResetOptions = passwordResetOptions;
 
             _jwtOpt = jwtOptions.Value;
             _authOpt = authOptions.Value;
@@ -195,6 +202,20 @@ namespace PostIQ.Identity.Services
 
         public async Task<Result<object>> ForgotPasswordAsync(ForgotPasswordRequest req, CancellationToken ct)
         {
+            var resetOptions = passwordResetOptions.Value;
+            if (!Uri.TryCreate(resetOptions.ResetUrl, UriKind.Absolute, out var resetBaseUri) ||
+                (resetBaseUri.Scheme != Uri.UriSchemeHttps && resetBaseUri.Scheme != Uri.UriSchemeHttp))
+            {
+                logger.LogError("Password reset email is not configured with a valid absolute HTTP(S) URL.");
+                return Result<object>.Failure(503, "Password reset email is currently unavailable.");
+            }
+
+            if (resetOptions.ExpirationMinutes <= 0)
+            {
+                logger.LogError("Password reset email expiration must be greater than zero.");
+                return Result<object>.Failure(503, "Password reset email is currently unavailable.");
+            }
+
             var email = req.Email.Trim().ToLowerInvariant();
             var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
 
@@ -214,24 +235,49 @@ namespace PostIQ.Identity.Services
                 UserId = user.Id,
                 Kind = SecurityTokenKind.PasswordReset,
                 TokenHash = CryptoUtil.Sha256Hex(opaque),
-                ExpiresAt = DateTimeOffset.UtcNow.AddHours(1),
+                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(resetOptions.ExpirationMinutes),
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
             db.SecurityTokens.Add(token);
             await db.SaveChangesAsync(ct);
 
-            logger.LogWarning("Password reset token for {Email}: {Token}", email, opaque);
-
-            var payload = new Dictionary<string, object?>
+            var resetUrlBuilder = new UriBuilder(resetBaseUri)
             {
-                ["message"] = "If the email exists, reset instructions were sent."
+                Query = $"token={Uri.EscapeDataString(opaque)}&email={Uri.EscapeDataString(email)}"
             };
+            var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "ResetPasswordEmail.html");
 
-            if (env.IsDevelopment())
-                payload["resetToken"] = opaque;
+            try
+            {
+                var template = await File.ReadAllTextAsync(templatePath, ct);
+                var resetUrl = System.Net.WebUtility.HtmlEncode(resetUrlBuilder.Uri.AbsoluteUri);
+                var htmlBody = template
+                    .Replace("{{RecipientName}}", System.Net.WebUtility.HtmlEncode(user.UserName ?? user.Email))
+                    .Replace("{{ExpirationMinutes}}", resetOptions.ExpirationMinutes.ToString(
+                        System.Globalization.CultureInfo.InvariantCulture))
+                    .Replace("{{ResetPasswordUrl}}", resetUrl)
+                    .Replace("{{SupportEmail}}", System.Net.WebUtility.HtmlEncode(resetOptions.SupportEmail))
+                    .Replace("{{CurrentYear}}", DateTime.UtcNow.Year.ToString(
+                        System.Globalization.CultureInfo.InvariantCulture));
 
-            return Result<object>.Success(payload);
+                await emailSender.SendAsync(
+                    new EmailMessage(email, "Reset your PostIQ password", htmlBody),
+                    ct);
+            }
+            catch (Exception ex) when (
+                ex is IOException or InvalidOperationException or System.Net.Mail.SmtpException or FormatException)
+            {
+                db.SecurityTokens.Remove(token);
+                await db.SaveChangesAsync(ct);
+                logger.LogError(ex, "Failed to send password reset email for user {UserId}.", user.Id);
+                return Result<object>.Failure(503, "Password reset email could not be sent. Please try again later.");
+            }
+
+            return Result<object>.Success(new
+            {
+                message = "If the email exists, reset instructions were sent."
+            });
         }
 
         public async Task<Result<object>> ResetPasswordAsync(ResetPasswordRequest req, CancellationToken ct)

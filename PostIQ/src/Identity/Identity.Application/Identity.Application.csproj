@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Identity.Core\Identity.Core.csproj" />
+    <ProjectReference Include="..\..\Core\PostIQ.Core\PostIQ.Core.csproj" />
   </ItemGroup>
 
 </Project>
