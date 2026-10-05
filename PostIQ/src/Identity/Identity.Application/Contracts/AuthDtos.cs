@@ -10,8 +10,6 @@ namespace PostIQ.Identity.Contracts
         public string Password { get; set; } = string.Empty;
         [MaxLength(256)]
         public string? UserName { get; set; }
-        [MaxLength(32)]
-        public string? PhoneNumber { get; set; } = null;
     }
 
     public class LoginRequest

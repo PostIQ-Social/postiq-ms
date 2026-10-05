@@ -26,9 +26,6 @@ namespace User.Application.Commands
         [Required, MaxLength(50)]
         public string LastName { get; set; } = null!;
 
-        [MaxLength(20)]
-        public string? PhoneNumber { get; set; }
-
         [Required, MaxLength(10)]
         public string ReferralCode { get; set; } = null!;
         public Guid AuthId {  get; set; }
