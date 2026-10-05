@@ -56,8 +56,6 @@ namespace User.Application.Handlers
             var userName = atIndex > 0 ? request.Email[..atIndex] : request.Email;
 
             // 2. Create the auth account in the Identity service.
-            var PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
-
             //var authId = identityResult.UserId;
             var now = DateTime.UtcNow;
 
@@ -71,7 +69,6 @@ namespace User.Application.Handlers
                     FirstName = request.FirstName.Trim(),
                     MiddleName = string.IsNullOrWhiteSpace(request.MiddleName) ? null : request.MiddleName.Trim(),
                     LastName = request.LastName.Trim(),
-                    Phone = PhoneNumber,
                     ReferralCode = RandomGenerator.RandomOTP(8),
                     IsActive = true,
                     CreatedOn = now,
