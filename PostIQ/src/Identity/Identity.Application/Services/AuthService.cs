@@ -262,7 +262,7 @@ namespace PostIQ.Identity.Services
                         System.Globalization.CultureInfo.InvariantCulture));
 
                 await emailSender.SendAsync(
-                    new EmailMessage(email, "Reset your PostIQ password", htmlBody),
+                    new EmailMessage(email, "Reset your Footprint password", htmlBody),
                     ct);
             }
             catch (Exception ex) when (
